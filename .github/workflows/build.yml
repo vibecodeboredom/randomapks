@@ -31,6 +31,10 @@ jobs:
         run: ./gradlew assembleDebug --no-daemon
         working-directory: devoptions
 
+      - name: Build App Disabler
+        run: ./gradlew assembleDebug --no-daemon
+        working-directory: appdisabler
+
       - name: Upload Settings Launcher APK
         uses: actions/upload-artifact@v4
         with:
@@ -42,3 +46,9 @@ jobs:
         with:
           name: DevOptions-debug
           path: devoptions/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Upload App Disabler APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: AppDisabler-debug
+          path: appdisabler/app/build/outputs/apk/debug/app-debug.apk

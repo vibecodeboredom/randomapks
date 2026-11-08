@@ -1,0 +1,15 @@
+# Gradle
+.gradle/
+build/
+local.properties
+*.iml
+
+# Android Studio
+.idea/
+*.hprof
+
+# Signing
+*.jks
+
+# OS
+.DS_Store

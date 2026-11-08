@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">App Disabler</string>
+    <string name="app_tagline">Disable system apps without ADB. Pick the apps, tap Disable, and it taps through Settings for you.</string>
+    <string name="enable_accessibility">1. Turn on the accessibility service</string>
+    <string name="pick_apps">2. Pick the apps to disable</string>
+    <string name="disable_selected">Disable selected</string>
+    <string name="accessibility_description">App Disabler taps the Disable button in Settings for the apps you pick, so you can disable bloatware without ADB.</string>
+</resources>
