@@ -123,7 +123,13 @@ class DisableService : AccessibilityService() {
             data = Uri.parse("package:$next")
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
-        startActivity(intent)
+        try {
+            startActivity(intent)
+        } catch (e: android.content.ActivityNotFoundException) {
+            report(next, STATUS_SKIPPED, "couldn't open App Info on this device")
+            beginNext()
+            return
+        }
         state = State.WAITING_DISABLE_BUTTON
     }
 

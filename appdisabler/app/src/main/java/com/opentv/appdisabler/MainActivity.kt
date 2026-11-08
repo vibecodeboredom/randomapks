@@ -78,12 +78,20 @@ class MainActivity : AppCompatActivity() {
         loadSystemApps(listLayout)
 
         accessButton.setOnClickListener {
-            startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
-            Toast.makeText(
-                this,
-                "Turn on App Disabler under Accessibility, then come back",
-                Toast.LENGTH_LONG
-            ).show()
+            try {
+                startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+                Toast.makeText(
+                    this,
+                    "Turn on App Disabler under Accessibility, then come back",
+                    Toast.LENGTH_LONG
+                ).show()
+            } catch (e: android.content.ActivityNotFoundException) {
+                Toast.makeText(
+                    this,
+                    "Couldn't open Accessibility settings on this device",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
 
         disableButton.setOnClickListener {
@@ -114,7 +122,9 @@ class MainActivity : AppCompatActivity() {
             addAction(DisableService.ACTION_PROGRESS)
             addAction(DisableService.ACTION_DONE)
         }
-        registerReceiver(progressReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+        // Plain 2-arg registerReceiver: the RECEIVER_NOT_EXPORTED flag
+        // is API 33+ and this box is Android 9 — don't use it here.
+        registerReceiver(progressReceiver, filter)
     }
 
     override fun onPause() {
