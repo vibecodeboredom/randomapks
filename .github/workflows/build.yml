@@ -23,11 +23,22 @@ jobs:
         with:
           packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
 
-      - name: Build debug APK
+      - name: Build Settings Launcher
         run: ./gradlew assembleDebug --no-daemon
+        working-directory: settingslauncher
 
-      - name: Upload APK
+      - name: Build DevOptions
+        run: ./gradlew assembleDebug --no-daemon
+        working-directory: devoptions
+
+      - name: Upload Settings Launcher APK
         uses: actions/upload-artifact@v4
         with:
           name: SettingsLauncher-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: settingslauncher/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Upload DevOptions APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: DevOptions-debug
+          path: devoptions/app/build/outputs/apk/debug/app-debug.apk
