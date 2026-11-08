@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         Shortcut("Accessibility", Settings.ACTION_ACCESSIBILITY_SETTINGS),
         Shortcut("Date & Time", Settings.ACTION_DATE_SETTINGS),
         Shortcut("Language", Settings.ACTION_LOCALE_SETTINGS),
+        Shortcut("Home App", Settings.ACTION_HOME_SETTINGS),
         Shortcut("Settings Home", Settings.ACTION_SETTINGS)
     )
 
