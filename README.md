@@ -15,6 +15,9 @@ An Android TV app that does one thing: open it and it jumps straight to the syst
 ### App Disabler (`appdisabler/`)
 Disables system apps without ADB. Pick the apps, tap Disable, and it uses an accessibility service to tap the Disable button in Settings for each one. Built for the cheap Android 9 TV box, where ADB over Wi-Fi doesn't exist and the stock launcher keeps coming back. Needs the App Disabler accessibility service turned on (the app walks you through it). It can only tap Disable where Settings offers it — a system app whose Disable button is greyed out stays enabled.
 
+### AdbBoot (`adbboot/`)
+Enables ADB over Wi-Fi on TCP port 5555 automatically at boot, so a reboot doesn't strand a device — no one has to run `adb tcpip 5555` from a PC afterwards. No root: it runs the switch through Shizuku (free), which gives it shell-level commands, and it also tries the permanent `persist.adb.tcp.port` setting so the fix can survive reboots on its own. One screen with a big "Enable ADB on port 5555 now" button and a status block. Needs a one-time setup per device (install Shizuku, start it once, allow this app in it) — see `adbboot/README.md` for the steps and the honest per-device limits (Shizuku auto-starts on boot only on Android 13+; the J2 on Android 9 and the AiPlus4K on Android 11 lean on the one-time permanent setting).
+
 ## Install
 
 Grab the APKs from the [latest pre-release](https://github.com/vibecodeboredom/usefulapks/releases) and sideload with ADB:
@@ -23,6 +26,7 @@ Grab the APKs from the [latest pre-release](https://github.com/vibecodeboredom/u
 adb install -r SettingsLauncher-1.0.1.apk
 adb install -r DevOptions-1.0.1.apk
 adb install -r AppDisabler-1.0.0.apk
+adb install -r AdbBoot-1.0.0.apk
 ```
 
 No ADB? Copy the APK to a USB flash drive, plug it into the device, open it with the file manager, and install.
@@ -33,6 +37,7 @@ No ADB? Copy the APK to a USB flash drive, plug it into the device, open it with
 cd settingslauncher && ./gradlew assembleDebug
 cd devoptions && ./gradlew assembleDebug
 cd appdisabler && ./gradlew assembleDebug
+cd adbboot && ./gradlew assembleDebug
 ```
 
 ## License

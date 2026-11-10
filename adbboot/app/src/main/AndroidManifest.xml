@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Plain Android (not Android TV-only): it runs on the TVs and on
+         the phones, so the launcher declares both LAUNCHER and
+         LEANBACK_LAUNCHER. -->
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
+    <!-- BOOT_COMPLETED so the receiver can re-enable ADB after a reboot. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- The 127.0.0.1:5555 status check is a TCP connect, which needs it. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Declared only so it can be granted ONCE from a PC
+         (adb shell pm grant com.opentv.adbboot
+         android.permission.WRITE_SECURE_SETTINGS). It is used for the
+         fallback only: turning wireless debugging back on at boot on
+         Android 11+ so the device is at least reachable on a TCP port.
+         A normal app cannot get this permission from the Play Store or
+         a runtime prompt. -->
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:banner="@drawable/ic_banner"
+        android:theme="@style/Theme.AdbBoot">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Runs at boot and re-enables ADB on TCP 5555 (via Shizuku,
+             with a wireless-debugging fallback). Exported=false: only
+             the system can send BOOT_COMPLETED to it. -->
+        <receiver
+            android:name=".BootReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Shizuku client support (see the Shizuku-API README). The
+             provider is how the app finds Shizuku's binder; the
+             INTERACT_ACROSS_USERS_FULL permission keeps other apps
+             from talking to it. -->
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:multiprocess="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+    </application>
+
+</manifest>

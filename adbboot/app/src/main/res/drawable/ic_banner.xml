@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- TV banner: the terminal prompt on a dark tile, same blue as the
+     other usefulapks apps. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="180dp"
+    android:viewportWidth="320"
+    android:viewportHeight="180">
+    <path
+        android:fillColor="#1A1A20"
+        android:pathData="M0,0h320v180h-320z" />
+    <path
+        android:fillColor="#3B82F6"
+        android:pathData="M160,55m-35,0a35,35 0,1 1,70 0a35,35 0,1 1,-70 0" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M148,42 L158,55 L148,68" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:pathData="M162,68 L176,68" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M118,128h84v6h-84zM138,142h44v6h-44z" />
+</vector>
