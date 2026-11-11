@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         Page("Date & time", Settings.ACTION_DATE_SETTINGS),
         Page("Language", Settings.ACTION_LOCALE_SETTINGS),
         Page("Storage", Settings.ACTION_INTERNAL_STORAGE_SETTINGS),
-        Page("Battery", Settings.ACTION_BATTERY_SETTINGS),
+        Page("Battery saver", Settings.ACTION_BATTERY_SAVER_SETTINGS),
         Page("Accessibility", Settings.ACTION_ACCESSIBILITY_SETTINGS),
         Page("Home app", Settings.ACTION_HOME_SETTINGS),
         // action = null: the custom action field supplies it.
