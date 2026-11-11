@@ -13,6 +13,11 @@ each opening. One screen, three inputs:
   Home app — plus a **Custom…** entry with a text field for any
   Settings action string (e.g. `android.settings.WIFI_SETTINGS`).
 
+- **Random page each time** — a checkbox. When on, a different page
+  is picked from the built-in list on every step (the page picker is
+  ignored; "Custom…" is never picked). The status line shows which
+  page just opened.
+
 Tap **Start** and the first page opens straight away; the rest follow
 Y ms apart. **Stop** cancels whatever is left at once. The status line
 counts the opens as they fire ("Opened 3 of 5"). A page the device

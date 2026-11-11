@@ -10,11 +10,13 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import kotlin.random.Random
 
 /**
  * Opens a chosen Settings page X times in a row, waiting Y ms between
@@ -64,6 +66,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var delayInput: EditText
     private lateinit var pageSpinner: Spinner
     private lateinit var customInput: EditText
+    private lateinit var randomCheckbox: CheckBox
     private lateinit var startButton: Button
     private lateinit var stopButton: Button
     private lateinit var statusText: TextView
@@ -74,17 +77,26 @@ class MainActivity : AppCompatActivity() {
     private var targetCount = 0
     private var openedCount = 0
     private var delayMs = 0L
+    private var randomMode = false
     private var currentAction = ""
     private var currentLabel = ""
 
     /** One step of the run: fire the Intent, count it, schedule the
-     * next one Y ms later — or finish when X is reached. */
+     * next one Y ms later — or finish when X is reached. In random
+     * mode a different page is picked from the built-in list on
+     * every step (the "Custom…" entry is never picked). */
     private val openStep = object : Runnable {
         override fun run() {
             if (!running) return
             if (openedCount >= targetCount) {
                 finishRun("Done — opened $openedCount of $targetCount")
                 return
+            }
+            if (randomMode) {
+                val realPages = pages.filter { it.action != null }
+                val page = realPages[Random.nextInt(realPages.size)]
+                currentAction = page.action!!
+                currentLabel = page.label
             }
             try {
                 startActivity(Intent(currentAction).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
@@ -98,7 +110,7 @@ class MainActivity : AppCompatActivity() {
                 return
             }
             openedCount++
-            statusText.text = "Opened $openedCount of $targetCount"
+            statusText.text = "Opened $openedCount of $targetCount — $currentLabel"
             if (openedCount >= targetCount) {
                 finishRun("Done — opened $openedCount of $targetCount")
             } else {
@@ -115,6 +127,7 @@ class MainActivity : AppCompatActivity() {
         delayInput = findViewById(R.id.delay_input)
         pageSpinner = findViewById(R.id.page_spinner)
         customInput = findViewById(R.id.custom_input)
+        randomCheckbox = findViewById(R.id.random_checkbox)
         startButton = findViewById(R.id.start_button)
         stopButton = findViewById(R.id.stop_button)
         statusText = findViewById(R.id.status_text)
@@ -159,8 +172,15 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Enter the delay (Y) in ms — 0 or more", Toast.LENGTH_SHORT).show()
             return
         }
+        // Random mode ignores the page picker — a different page is
+        // picked from the built-in list on every step.
+        randomMode = randomCheckbox.isChecked
         val page = pages[pageSpinner.selectedItemPosition]
-        val action = page.action ?: customInput.text.toString().trim()
+        val action = if (randomMode) {
+            pages.first { it.action != null }.action!!
+        } else {
+            page.action ?: customInput.text.toString().trim()
+        }
         if (action.isEmpty()) {
             Toast.makeText(this, "Enter a Settings action, e.g. android.settings.WIFI_SETTINGS", Toast.LENGTH_SHORT).show()
             return
@@ -169,7 +189,7 @@ class MainActivity : AppCompatActivity() {
         targetCount = times
         delayMs = delay
         currentAction = action
-        currentLabel = page.label
+        currentLabel = if (randomMode) "random page" else page.label
         openedCount = 0
         running = true
         setRunningUi()
@@ -200,6 +220,7 @@ class MainActivity : AppCompatActivity() {
         delayInput.isEnabled = false
         pageSpinner.isEnabled = false
         customInput.isEnabled = false
+        randomCheckbox.isEnabled = false
         startButton.isEnabled = false
         stopButton.isEnabled = true
         stopButton.requestFocus()
@@ -210,6 +231,7 @@ class MainActivity : AppCompatActivity() {
         delayInput.isEnabled = true
         pageSpinner.isEnabled = true
         customInput.isEnabled = true
+        randomCheckbox.isEnabled = true
         startButton.isEnabled = true
         stopButton.isEnabled = false
     }

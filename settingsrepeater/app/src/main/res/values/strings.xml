@@ -7,6 +7,7 @@
     <string name="delay_label">Delay (Y) — ms between each opening</string>
     <string name="delay_hint">e.g. 500</string>
     <string name="page_label">Settings page (Z)</string>
+    <string name="random_label">Random page each time (ignores the page above)</string>
     <string name="custom_hint">Settings action, e.g. android.settings.WIFI_SETTINGS</string>
     <string name="status_ready">Ready</string>
     <string name="start_button">Start</string>
