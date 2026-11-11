@@ -21,6 +21,9 @@ Enables ADB over Wi-Fi on TCP port 5555 automatically at boot, so a reboot doesn
 ### Settings Repeater (`settingsrepeater/`)
 Opens a chosen Settings page X times in a row, waiting Y ms between each opening. Three inputs: X (how many times), Y (delay in ms), Z (which Settings page — a picker mirroring Settings Launcher's list, plus Battery and a Custom… action string). Big Start and Stop buttons and a status line ("Opened 3 of 5"). No permissions, no network, no root.
 
+### Admin Tools (`admintools/`)
+Lists the Device Admin features and gives each one a button to trigger it — lock now, set lock screen password, password quality/length/expiration, maximum time to lock, disable camera, keyguard features, storage encryption, and permitted accessibility services. The app is its own device admin (Enable device admin button opens the system Activate prompt); the feature buttons stay disabled until it is active. Every call is guarded — a failure is a toast, never a crash. There is deliberately no way to erase the device in this app.
+
 ## Install
 
 Grab the APKs from the [latest pre-release](https://github.com/vibecodeboredom/usefulapks/releases) and sideload with ADB:
@@ -31,6 +34,7 @@ adb install -r DevOptions-1.0.1.apk
 adb install -r AppDisabler-1.0.0.apk
 adb install -r AdbBoot-1.0.0.apk
 adb install -r SettingsRepeater-1.0.0.apk
+adb install -r AdminTools-1.0.0.apk
 ```
 
 No ADB? Copy the APK to a USB flash drive, plug it into the device, open it with the file manager, and install.
@@ -43,6 +47,7 @@ cd devoptions && ./gradlew assembleDebug
 cd appdisabler && ./gradlew assembleDebug
 cd adbboot && ./gradlew assembleDebug
 cd settingsrepeater && ./gradlew assembleDebug
+cd admintools && ./gradlew assembleDebug
 ```
 
 ## License
