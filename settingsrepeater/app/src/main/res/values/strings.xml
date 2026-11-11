@@ -12,5 +12,6 @@
     <string name="status_ready">Ready</string>
     <string name="start_button">Start</string>
     <string name="stop_button">Stop</string>
+    <string name="admin_button">Enable device admin</string>
     <string name="note">The first page opens straight away; the rest follow Y ms apart. Stop cancels whatever is left. If the page is already on screen, opening it again just brings it to the front — the count still advances. Press Back to come back here and see the final count.</string>
 </resources>

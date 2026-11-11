@@ -143,6 +143,18 @@
             android:textColor="#FFFFFF"
             android:textSize="22sp" />
 
+        <Button
+            android:id="@+id/admin_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/button_bg"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:text="@string/admin_button"
+            android:textColor="#FFFFFF"
+            android:textSize="22sp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

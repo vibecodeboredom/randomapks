@@ -33,9 +33,18 @@ The repeat runs in `RepeatService`, a foreground service with a
 visible notification, so Android treats it as work the user can see
 and doesn't kill it mid-run — even while a Settings page is on
 screen. The app also asks (once) to ignore battery optimisations, so
-Doze / App Standby can't throttle it. A Device Admin privilege on
-its own would NOT stop Android killing a background process, which
-is why the foreground service is the mechanism, not an admin role.
+Doze / App Standby can't throttle it.
+
+There is also an **Enable device admin** button. It opens the system
+prompt to make the app a device admin. That does NOT keep the app on
+top and does NOT stop Android killing a background process — the
+foreground service is what does the background work. What the admin
+role adds is that the app can't be force-stopped or uninstalled until
+the admin is removed first. It has to be turned on by tapping
+Activate in the prompt; it can't be enabled silently. Note that
+opening a Settings page always puts Settings on top by design — the
+app itself can't stay on top while it opens other pages, which is
+exactly why the work runs in the background service.
 
 No permissions, no network, no root.
 

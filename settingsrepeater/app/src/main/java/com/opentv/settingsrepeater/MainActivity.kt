@@ -1,6 +1,8 @@
 package com.opentv.settingsrepeater
 
+import android.app.admin.DevicePolicyManager
 import android.content.BroadcastReceiver
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -57,6 +59,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var randomCheckbox: CheckBox
     private lateinit var startButton: Button
     private lateinit var stopButton: Button
+    private lateinit var adminButton: Button
     private lateinit var statusText: TextView
 
     /** Last inputs, so the app reopens with what the user typed
@@ -96,6 +99,7 @@ class MainActivity : AppCompatActivity() {
         randomCheckbox = findViewById(R.id.random_checkbox)
         startButton = findViewById(R.id.start_button)
         stopButton = findViewById(R.id.stop_button)
+        adminButton = findViewById(R.id.admin_button)
         statusText = findViewById(R.id.status_text)
 
         prefs = getSharedPreferences("settingsrepeater", Context.MODE_PRIVATE)
@@ -143,6 +147,7 @@ class MainActivity : AppCompatActivity() {
 
         startButton.setOnClickListener { startRun() }
         stopButton.setOnClickListener { stopRun() }
+        adminButton.setOnClickListener { enableAdmin() }
 
         setIdleUi()
         // Focus Start so a remote works straight away.
@@ -235,6 +240,33 @@ class MainActivity : AppCompatActivity() {
             action = RepeatService.ACTION_STOP
         }
         startService(serviceIntent)
+    }
+
+    /** Device admin: opens the system prompt to make this app a
+     * device admin. It cannot be turned on silently — the user has
+     * to tap Activate. Once on, the app can't be force-stopped or
+     * uninstalled until the admin is removed first. It does not
+     * keep the app on top; the foreground service does the
+     * background work. */
+    private fun enableAdmin() {
+        val admin = ComponentName(this, AdminReceiver::class.java)
+        val dpm = getSystemService(DEVICE_POLICY_SERVICE) as DevicePolicyManager
+        if (dpm.isAdminActive(admin)) {
+            Toast.makeText(this, "Already a device admin", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
+            putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, admin)
+            putExtra(
+                DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+                "So Settings Repeater can't be force-stopped or uninstalled by accident."
+            )
+        }
+        try {
+            startActivity(intent)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Couldn't open the device admin prompt", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun setRunningUi() {

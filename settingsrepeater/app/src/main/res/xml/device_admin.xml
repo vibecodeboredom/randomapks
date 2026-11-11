@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Device admin policies for Settings Repeater. No policies are
+     declared: the admin role is only so the app can't be
+     force-stopped or uninstalled without removing the admin first.
+     It does not keep the app on top — the foreground service does
+     the background work. -->
+<device-admin xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-policies />
+</device-admin>
