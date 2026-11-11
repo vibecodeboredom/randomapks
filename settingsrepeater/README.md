@@ -23,6 +23,10 @@ Y ms apart. **Stop** cancels whatever is left at once. The status line
 counts the opens as they fire ("Opened 3 of 5"). A page the device
 can't open shows a toast instead of crashing, and the run stops.
 
+Your last inputs (times, delay, page, custom action, random) are
+remembered — reopening the app brings them back instead of resetting
+to defaults.
+
 No permissions, no network, no root.
 
 ## Honest limits

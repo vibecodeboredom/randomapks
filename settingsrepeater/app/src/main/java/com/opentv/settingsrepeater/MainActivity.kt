@@ -1,11 +1,15 @@
 package com.opentv.settingsrepeater
 
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -73,6 +77,10 @@ class MainActivity : AppCompatActivity() {
 
     private val handler = Handler(Looper.getMainLooper())
 
+    /** Last inputs, so the app reopens with what the user typed
+     * before instead of resetting to defaults. */
+    private lateinit var prefs: SharedPreferences
+
     private var running = false
     private var targetCount = 0
     private var openedCount = 0
@@ -132,6 +140,24 @@ class MainActivity : AppCompatActivity() {
         stopButton = findViewById(R.id.stop_button)
         statusText = findViewById(R.id.status_text)
 
+        prefs = getSharedPreferences("settingsrepeater", Context.MODE_PRIVATE)
+        // Restore the last inputs before wiring the listeners, so the
+        // listeners don't save the defaults over them.
+        timesInput.setText(prefs.getString("times", "5"))
+        delayInput.setText(prefs.getString("delay", "500"))
+        customInput.setText(prefs.getString("custom", ""))
+        randomCheckbox.isChecked = prefs.getBoolean("random", false)
+
+        val saveWatcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+            override fun afterTextChanged(s: Editable?) = saveInputs()
+        }
+        timesInput.addTextChangedListener(saveWatcher)
+        delayInput.addTextChangedListener(saveWatcher)
+        customInput.addTextChangedListener(saveWatcher)
+        randomCheckbox.setOnCheckedChangeListener { _, _ -> saveInputs() }
+
         val adapter = ArrayAdapter(
             this,
             android.R.layout.simple_spinner_item,
@@ -140,6 +166,10 @@ class MainActivity : AppCompatActivity() {
             setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         }
         pageSpinner.adapter = adapter
+        pageSpinner.setSelection(
+            prefs.getInt("page", 0).coerceIn(0, pages.size - 1),
+            false
+        )
         pageSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>, view: View?, position: Int, id: Long
@@ -147,6 +177,7 @@ class MainActivity : AppCompatActivity() {
                 // Only the "Custom…" entry needs the free-text field.
                 customInput.visibility =
                     if (pages[position].action == null) View.VISIBLE else View.GONE
+                saveInputs()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) = Unit
@@ -234,6 +265,23 @@ class MainActivity : AppCompatActivity() {
         randomCheckbox.isEnabled = true
         startButton.isEnabled = true
         stopButton.isEnabled = false
+    }
+
+    /** Persist the current inputs so the next launch restores them. */
+    private fun saveInputs() {
+        prefs.edit()
+            .putString("times", timesInput.text.toString())
+            .putString("delay", delayInput.text.toString())
+            .putString("custom", customInput.text.toString())
+            .putInt("page", pageSpinner.selectedItemPosition)
+            .putBoolean("random", randomCheckbox.isChecked)
+            .apply()
+    }
+
+    override fun onPause() {
+        // Safety net: save even if a listener missed a change.
+        saveInputs()
+        super.onPause()
     }
 
     override fun onDestroy() {
