@@ -1,12 +1,14 @@
 package com.opentv.settingsrepeater
 
-import android.content.ActivityNotFoundException
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.os.PowerManager
 import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
@@ -20,7 +22,6 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import kotlin.random.Random
 
 /**
  * Opens a chosen Settings page X times in a row, waiting Y ms between
@@ -28,43 +29,26 @@ import kotlin.random.Random
  *   X = how many times to open the page,
  *   Y = delay in milliseconds between openings,
  *   Z = which Settings page (a picker, plus a "Custom…" action string).
+ * Plus a "Random page each time" checkbox.
  *
  * One screen, big text and buttons, remote / DPAD friendly — same
- * style as the other usefulapks apps. No permissions, no network.
+ * style as the other usefulapks apps. No network.
  *
- * The repeat is a Handler on the main looper: the first page opens
- * immediately, then one every Y ms until X is reached. Stop cancels
- * whatever is left at once. The status line counts the opens as they
- * fire ("Opened 3 of 5").
+ * The repeat itself runs in RepeatService, a foreground service, so
+ * Android treats it as work the user can see and doesn't kill it
+ * mid-run — that's what keeps it alive while a Settings page is on
+ * screen. (A Device Admin privilege on its own would NOT stop
+ * Android killing a background process.) The service also asks to
+ * ignore battery optimisations, so Doze / App Standby can't throttle
+ * it. This Activity only collects the inputs, starts/stops the
+ * service, and shows progress from its broadcasts.
+ *
+ * Last inputs (times, delay, page, custom action, random) are
+ * remembered in SharedPreferences and restored on launch.
  */
 class MainActivity : AppCompatActivity() {
 
-    /** Label + the Settings action that opens that screen. The list
-     * mirrors Settings Launcher's shortcuts (same repo) so the two
-     * apps stay consistent, plus Battery, which it doesn't have. */
-    private data class Page(val label: String, val action: String?)
-
-    private val pages = listOf(
-        Page("Settings home", Settings.ACTION_SETTINGS),
-        Page("Wi-Fi", Settings.ACTION_WIFI_SETTINGS),
-        Page("Bluetooth", Settings.ACTION_BLUETOOTH_SETTINGS),
-        Page("Network & Internet", Settings.ACTION_WIRELESS_SETTINGS),
-        Page("Apps", Settings.ACTION_APPLICATION_SETTINGS),
-        Page("Display", Settings.ACTION_DISPLAY_SETTINGS),
-        Page("Sound", Settings.ACTION_SOUND_SETTINGS),
-        Page("Location", Settings.ACTION_LOCATION_SOURCE_SETTINGS),
-        Page("Security", Settings.ACTION_SECURITY_SETTINGS),
-        Page("Developer options", Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS),
-        Page("About phone", Settings.ACTION_DEVICE_INFO_SETTINGS),
-        Page("Date & time", Settings.ACTION_DATE_SETTINGS),
-        Page("Language", Settings.ACTION_LOCALE_SETTINGS),
-        Page("Storage", Settings.ACTION_INTERNAL_STORAGE_SETTINGS),
-        Page("Battery saver", Settings.ACTION_BATTERY_SAVER_SETTINGS),
-        Page("Accessibility", Settings.ACTION_ACCESSIBILITY_SETTINGS),
-        Page("Home app", Settings.ACTION_HOME_SETTINGS),
-        // action = null: the custom action field supplies it.
-        Page("Custom…", null)
-    )
+    private val pages get() = SettingsPages.pages
 
     private lateinit var timesInput: EditText
     private lateinit var delayInput: EditText
@@ -75,54 +59,28 @@ class MainActivity : AppCompatActivity() {
     private lateinit var stopButton: Button
     private lateinit var statusText: TextView
 
-    private val handler = Handler(Looper.getMainLooper())
-
     /** Last inputs, so the app reopens with what the user typed
      * before instead of resetting to defaults. */
     private lateinit var prefs: SharedPreferences
 
     private var running = false
-    private var targetCount = 0
-    private var openedCount = 0
-    private var delayMs = 0L
-    private var randomMode = false
-    private var currentAction = ""
-    private var currentLabel = ""
 
-    /** One step of the run: fire the Intent, count it, schedule the
-     * next one Y ms later — or finish when X is reached. In random
-     * mode a different page is picked from the built-in list on
-     * every step (the "Custom…" entry is never picked). */
-    private val openStep = object : Runnable {
-        override fun run() {
-            if (!running) return
-            if (openedCount >= targetCount) {
-                finishRun("Done — opened $openedCount of $targetCount")
-                return
-            }
-            if (randomMode) {
-                val realPages = pages.filter { it.action != null }
-                val page = realPages[Random.nextInt(realPages.size)]
-                currentAction = page.action!!
-                currentLabel = page.label
-            }
-            try {
-                startActivity(Intent(currentAction).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-            } catch (e: ActivityNotFoundException) {
-                finishRun("Stopped — couldn't open $currentLabel on this device")
-                Toast.makeText(
-                    this@MainActivity,
-                    "Couldn't open $currentLabel on this device",
-                    Toast.LENGTH_SHORT
-                ).show()
-                return
-            }
-            openedCount++
-            statusText.text = "Opened $openedCount of $targetCount — $currentLabel"
-            if (openedCount >= targetCount) {
-                finishRun("Done — opened $openedCount of $targetCount")
-            } else {
-                handler.postDelayed(this, delayMs)
+    /** Progress + finished broadcasts from RepeatService. */
+    private val progressReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            when (intent?.action) {
+                RepeatService.BROADCAST_PROGRESS -> {
+                    val count = intent.getIntExtra(RepeatService.EXTRA_COUNT, 0)
+                    val total = intent.getIntExtra(RepeatService.EXTRA_TOTAL, 0)
+                    val label = intent.getStringExtra(RepeatService.EXTRA_PAGE_LABEL).orEmpty()
+                    statusText.text = "Opened $count of $total — $label"
+                }
+                RepeatService.BROADCAST_DONE -> {
+                    running = false
+                    setIdleUi()
+                    statusText.text =
+                        intent.getStringExtra(RepeatService.EXTRA_MESSAGE).orEmpty()
+                }
             }
         }
     }
@@ -184,11 +142,31 @@ class MainActivity : AppCompatActivity() {
         }
 
         startButton.setOnClickListener { startRun() }
-        stopButton.setOnClickListener { stopRun("Stopped at $openedCount of $targetCount") }
+        stopButton.setOnClickListener { stopRun() }
 
         setIdleUi()
         // Focus Start so a remote works straight away.
         startButton.requestFocus()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val filter = IntentFilter().apply {
+            addAction(RepeatService.BROADCAST_PROGRESS)
+            addAction(RepeatService.BROADCAST_DONE)
+        }
+        registerReceiver(progressReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+    }
+
+    override fun onPause() {
+        // Safety net: save even if a listener missed a change.
+        saveInputs()
+        try {
+            unregisterReceiver(progressReceiver)
+        } catch (e: IllegalArgumentException) {
+            // Wasn't registered.
+        }
+        super.onPause()
     }
 
     private fun startRun() {
@@ -205,7 +183,7 @@ class MainActivity : AppCompatActivity() {
         }
         // Random mode ignores the page picker — a different page is
         // picked from the built-in list on every step.
-        randomMode = randomCheckbox.isChecked
+        val randomMode = randomCheckbox.isChecked
         val page = pages[pageSpinner.selectedItemPosition]
         val action = if (randomMode) {
             pages.first { it.action != null }.action!!
@@ -217,33 +195,46 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        targetCount = times
-        delayMs = delay
-        currentAction = action
-        currentLabel = if (randomMode) "random page" else page.label
-        openedCount = 0
+        // Ask to ignore battery optimisations once, so Doze / App
+        // Standby can't throttle the run. The run starts regardless.
+        val pm = getSystemService(POWER_SERVICE) as PowerManager
+        if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+            try {
+                startActivity(
+                    Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+                        .setData(Uri.parse("package:$packageName"))
+                )
+            } catch (e: Exception) {
+                // Some builds refuse the prompt; the foreground
+                // service is the main protection anyway.
+            }
+        }
+
+        val serviceIntent = Intent(this, RepeatService::class.java).apply {
+            this.action = RepeatService.ACTION_START
+            putExtra(RepeatService.EXTRA_TIMES, times)
+            putExtra(RepeatService.EXTRA_DELAY, delay)
+            putExtra(RepeatService.EXTRA_RANDOM, randomMode)
+            putExtra(RepeatService.EXTRA_ACTION, action)
+            putExtra(RepeatService.EXTRA_LABEL, if (randomMode) "random page" else page.label)
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent)
+        } else {
+            startService(serviceIntent)
+        }
         running = true
         setRunningUi()
         statusText.text = "Starting…"
-        // First page opens immediately; the rest follow Y ms apart.
-        handler.post(openStep)
     }
 
-    /** Stop button: cancel whatever is left at once. */
-    private fun stopRun(message: String) {
+    /** Stop button: tell the service to cancel whatever is left. */
+    private fun stopRun() {
         if (!running) return
-        handler.removeCallbacks(openStep)
-        running = false
-        setIdleUi()
-        statusText.text = message
-    }
-
-    /** Run finished on its own (or the page couldn't be opened). */
-    private fun finishRun(message: String) {
-        handler.removeCallbacks(openStep)
-        running = false
-        setIdleUi()
-        statusText.text = message
+        val serviceIntent = Intent(this, RepeatService::class.java).apply {
+            action = RepeatService.ACTION_STOP
+        }
+        startService(serviceIntent)
     }
 
     private fun setRunningUi() {
@@ -276,18 +267,5 @@ class MainActivity : AppCompatActivity() {
             .putInt("page", pageSpinner.selectedItemPosition)
             .putBoolean("random", randomCheckbox.isChecked)
             .apply()
-    }
-
-    override fun onPause() {
-        // Safety net: save even if a listener missed a change.
-        saveInputs()
-        super.onPause()
-    }
-
-    override fun onDestroy() {
-        // Never let a run outlive the screen.
-        handler.removeCallbacks(openStep)
-        running = false
-        super.onDestroy()
     }
 }

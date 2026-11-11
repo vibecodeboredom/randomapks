@@ -11,7 +11,15 @@
         android:name="android.hardware.touchscreen"
         android:required="false" />
 
-    <!-- No permissions needed: it only fires Settings intents. -->
+    <!-- Foreground service: the repeat loop runs in RepeatService so
+         Android treats it as visible work and doesn't kill it
+         mid-run. specialUse is the catch-all type for this kind of
+         work; the app is not on the Play Store, so no store
+         declaration is needed. REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+         lets the app ask to be exempt from Doze / App Standby. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <application
         android:allowBackup="true"
@@ -31,6 +39,10 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
+        <service
+            android:name=".RepeatService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
     </application>
 
 </manifest>

@@ -27,6 +27,16 @@ Your last inputs (times, delay, page, custom action, random) are
 remembered — reopening the app brings them back instead of resetting
 to defaults.
 
+## Staying alive
+
+The repeat runs in `RepeatService`, a foreground service with a
+visible notification, so Android treats it as work the user can see
+and doesn't kill it mid-run — even while a Settings page is on
+screen. The app also asks (once) to ignore battery optimisations, so
+Doze / App Standby can't throttle it. A Device Admin privilege on
+its own would NOT stop Android killing a background process, which
+is why the foreground service is the mechanism, not an admin role.
+
 No permissions, no network, no root.
 
 ## Honest limits
