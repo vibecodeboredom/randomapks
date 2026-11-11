@@ -110,6 +110,17 @@
             android:textColor="#FFFFFF"
             android:textSize="20sp" />
 
+        <CheckBox
+            android:id="@+id/root_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:buttonTint="#86C739"
+            android:text="@string/root_label"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:visibility="gone" />
+
         <TextView
             android:id="@+id/status_text"
             android:layout_width="wrap_content"

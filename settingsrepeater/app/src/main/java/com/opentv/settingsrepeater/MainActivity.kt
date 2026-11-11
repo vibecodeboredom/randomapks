@@ -45,8 +45,15 @@ import androidx.appcompat.app.AppCompatActivity
  * it. This Activity only collects the inputs, starts/stops the
  * service, and shows progress from its broadcasts.
  *
- * Last inputs (times, delay, page, custom action, random) are
- * remembered in SharedPreferences and restored on launch.
+ * On a rooted device there's also a "Use root (su)" option: the
+ * service opens each page from a root shell instead of firing an
+ * Intent, so the launch works even while the app is in the
+ * background. The checkbox only shows when a su binary is found,
+ * and it defaults to on. On a non-rooted device the option is
+ * hidden and the normal foreground-service path is used.
+ *
+ * Last inputs (times, delay, page, custom action, random, use root)
+ * are remembered in SharedPreferences and restored on launch.
  */
 class MainActivity : AppCompatActivity() {
 
@@ -57,6 +64,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var pageSpinner: Spinner
     private lateinit var customInput: EditText
     private lateinit var randomCheckbox: CheckBox
+    private lateinit var rootCheckbox: CheckBox
     private lateinit var startButton: Button
     private lateinit var stopButton: Button
     private lateinit var adminButton: Button
@@ -97,6 +105,7 @@ class MainActivity : AppCompatActivity() {
         pageSpinner = findViewById(R.id.page_spinner)
         customInput = findViewById(R.id.custom_input)
         randomCheckbox = findViewById(R.id.random_checkbox)
+        rootCheckbox = findViewById(R.id.root_checkbox)
         startButton = findViewById(R.id.start_button)
         stopButton = findViewById(R.id.stop_button)
         adminButton = findViewById(R.id.admin_button)
@@ -109,6 +118,12 @@ class MainActivity : AppCompatActivity() {
         delayInput.setText(prefs.getString("delay", "500"))
         customInput.setText(prefs.getString("custom", ""))
         randomCheckbox.isChecked = prefs.getBoolean("random", false)
+        // Root option: only shown when a su binary is present, and
+        // on by default then. Hidden entirely on non-rooted devices.
+        val rootAvailable = RootHelper.isRootAvailable()
+        rootCheckbox.visibility = if (rootAvailable) View.VISIBLE else View.GONE
+        rootCheckbox.isChecked =
+            prefs.getBoolean("useRoot", true) && rootAvailable
 
         val saveWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
@@ -119,6 +134,7 @@ class MainActivity : AppCompatActivity() {
         delayInput.addTextChangedListener(saveWatcher)
         customInput.addTextChangedListener(saveWatcher)
         randomCheckbox.setOnCheckedChangeListener { _, _ -> saveInputs() }
+        rootCheckbox.setOnCheckedChangeListener { _, _ -> saveInputs() }
 
         val adapter = ArrayAdapter(
             this,
@@ -160,7 +176,17 @@ class MainActivity : AppCompatActivity() {
             addAction(RepeatService.BROADCAST_PROGRESS)
             addAction(RepeatService.BROADCAST_DONE)
         }
-        registerReceiver(progressReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+        // The 3-arg registerReceiver(receiver, filter, flags) only
+        // exists from Android 13 (API 33); on older versions the
+        // 2-arg call is the only one, and calling the 3-arg one
+        // would crash with NoSuchMethodError. (This is what lets the
+        // app run on Android 7.1.2 / API 25.)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(progressReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            @Suppress("DEPRECATION")
+            registerReceiver(progressReceiver, filter)
+        }
     }
 
     override fun onPause() {
@@ -222,6 +248,10 @@ class MainActivity : AppCompatActivity() {
             putExtra(RepeatService.EXTRA_RANDOM, randomMode)
             putExtra(RepeatService.EXTRA_ACTION, action)
             putExtra(RepeatService.EXTRA_LABEL, if (randomMode) "random page" else page.label)
+            putExtra(
+                RepeatService.EXTRA_USE_ROOT,
+                rootCheckbox.isChecked && RootHelper.isRootAvailable()
+            )
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(serviceIntent)
@@ -275,6 +305,7 @@ class MainActivity : AppCompatActivity() {
         pageSpinner.isEnabled = false
         customInput.isEnabled = false
         randomCheckbox.isEnabled = false
+        rootCheckbox.isEnabled = false
         startButton.isEnabled = false
         stopButton.isEnabled = true
         stopButton.requestFocus()
@@ -286,6 +317,7 @@ class MainActivity : AppCompatActivity() {
         pageSpinner.isEnabled = true
         customInput.isEnabled = true
         randomCheckbox.isEnabled = true
+        rootCheckbox.isEnabled = true
         startButton.isEnabled = true
         stopButton.isEnabled = false
     }
@@ -298,6 +330,7 @@ class MainActivity : AppCompatActivity() {
             .putString("custom", customInput.text.toString())
             .putInt("page", pageSpinner.selectedItemPosition)
             .putBoolean("random", randomCheckbox.isChecked)
+            .putBoolean("useRoot", rootCheckbox.isChecked)
             .apply()
     }
 }

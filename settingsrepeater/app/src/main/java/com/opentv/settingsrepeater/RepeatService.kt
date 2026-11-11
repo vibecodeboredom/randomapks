@@ -39,6 +39,11 @@ class RepeatService : Service() {
         const val EXTRA_ACTION = "action"
         const val EXTRA_LABEL = "label"
 
+        /** Root mode: open each page via `su -c "am start …"` instead
+         * of a normal Intent. Set by MainActivity when the user
+         * turns "Use root" on (and a su binary is present). */
+        const val EXTRA_USE_ROOT = "useRoot"
+
         /** Progress broadcast: count / total / page label. */
         const val BROADCAST_PROGRESS = "com.opentv.settingsrepeater.PROGRESS"
         const val EXTRA_COUNT = "count"
@@ -61,6 +66,7 @@ class RepeatService : Service() {
     private var randomMode = false
     private var currentAction = ""
     private var currentLabel = ""
+    private var useRoot = false
 
     private val openStep = object : Runnable {
         override fun run() {
@@ -76,21 +82,48 @@ class RepeatService : Service() {
                 currentAction = page.action!!
                 currentLabel = page.label
             }
-            try {
-                startActivity(
-                    Intent(currentAction).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                )
-            } catch (e: ActivityNotFoundException) {
-                finishRun("Stopped — couldn't open $currentLabel on this device")
-                return
-            }
-            openedCount++
-            updateProgress()
-            if (openedCount >= targetCount) {
-                finishRun("Done — opened $openedCount of $targetCount")
+            if (useRoot) {
+                // Root launch: `su -c "am start -a <action>"`, on a
+                // background thread so the su exec can't block the
+                // main thread. The count advances back on the main
+                // thread when it finishes. A root shell starts the
+                // Settings page even while the app is in the
+                // background — the launch doesn't depend on the app
+                // being in the foreground at all.
+                Thread {
+                    val ok = RootHelper.openSettingsPage(currentAction)
+                    handler.post {
+                        if (!running) return@post
+                        if (!ok) {
+                            finishRun("Stopped — root couldn't open $currentLabel")
+                            return@post
+                        }
+                        afterOpen()
+                    }
+                }.start()
             } else {
-                handler.postDelayed(this, delayMs)
+                try {
+                    startActivity(
+                        Intent(currentAction).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    )
+                } catch (e: ActivityNotFoundException) {
+                    finishRun("Stopped — couldn't open $currentLabel on this device")
+                    return
+                }
+                afterOpen()
             }
+        }
+    }
+
+    /** Shared tail of one open: count it, report progress, and
+     * either finish or schedule the next step after the delay. */
+    private fun afterOpen() {
+        openedCount++
+        updateProgress()
+        if (openedCount >= targetCount) {
+            finishRun("Done — opened $openedCount of $targetCount")
+        } else {
+            handler.postDelayed(openStep, delayMs)
         }
     }
 
@@ -107,6 +140,11 @@ class RepeatService : Service() {
                 randomMode = intent.getBooleanExtra(EXTRA_RANDOM, false)
                 currentAction = intent.getStringExtra(EXTRA_ACTION).orEmpty()
                 currentLabel = intent.getStringExtra(EXTRA_LABEL).orEmpty()
+                // Root mode only actually runs as root when a su
+                // binary is present; otherwise fall back to the
+                // normal Intent path for this run.
+                useRoot = intent.getBooleanExtra(EXTRA_USE_ROOT, false) &&
+                    RootHelper.isRootAvailable()
                 if (targetCount < 1 || currentAction.isEmpty()) {
                     stopSelf()
                     return START_NOT_STICKY

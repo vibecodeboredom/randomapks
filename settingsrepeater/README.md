@@ -46,6 +46,23 @@ opening a Settings page always puts Settings on top by design — the
 app itself can't stay on top while it opens other pages, which is
 exactly why the work runs in the background service.
 
+## Root mode (su)
+
+On a rooted device a **Use root (su)** checkbox appears (it is
+hidden on non-rooted devices, and on by default when root is
+found). When it is on, each page is opened from a root shell —
+`su -c "am start -a <action>"` — instead of a normal Intent, so
+the launch works even while the app is in the background and
+doesn't depend on the app being in the foreground at all. The
+foreground service still hosts the loop and reports progress; the
+root shell just does the opening. If root disappears mid-run, the
+run stops with a message instead of crashing. Turning the checkbox
+off uses the normal Intent path, exactly as before.
+
+Android 7.1.2 (API 25) is supported from v1.0.5: minSdk is 25, and
+the notification channel and the broadcast-receiver registration
+are both guarded so they only use the newer APIs where they exist.
+
 No permissions, no network, no root.
 
 ## Honest limits
