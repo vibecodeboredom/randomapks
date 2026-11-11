@@ -18,6 +18,9 @@ Disables system apps without ADB. Pick the apps, tap Disable, and it uses an acc
 ### AdbBoot (`adbboot/`)
 Enables ADB over Wi-Fi on TCP port 5555 automatically at boot, so a reboot doesn't strand a device — no one has to run `adb tcpip 5555` from a PC afterwards. No root: it runs the switch through Shizuku (free), which gives it shell-level commands, and it also tries the permanent `persist.adb.tcp.port` setting so the fix can survive reboots on its own. One screen with a big "Enable ADB on port 5555 now" button and a status block. Needs a one-time setup per device (install Shizuku, start it once, allow this app in it) — see `adbboot/README.md` for the steps and the honest per-device limits (Shizuku auto-starts on boot only on Android 13+; the J2 on Android 9 and the AiPlus4K on Android 11 lean on the one-time permanent setting).
 
+### Settings Repeater (`settingsrepeater/`)
+Opens a chosen Settings page X times in a row, waiting Y ms between each opening. Three inputs: X (how many times), Y (delay in ms), Z (which Settings page — a picker mirroring Settings Launcher's list, plus Battery and a Custom… action string). Big Start and Stop buttons and a status line ("Opened 3 of 5"). No permissions, no network, no root.
+
 ## Install
 
 Grab the APKs from the [latest pre-release](https://github.com/vibecodeboredom/usefulapks/releases) and sideload with ADB:
@@ -27,6 +30,7 @@ adb install -r SettingsLauncher-1.0.1.apk
 adb install -r DevOptions-1.0.1.apk
 adb install -r AppDisabler-1.0.0.apk
 adb install -r AdbBoot-1.0.0.apk
+adb install -r SettingsRepeater-1.0.0.apk
 ```
 
 No ADB? Copy the APK to a USB flash drive, plug it into the device, open it with the file manager, and install.
@@ -38,6 +42,7 @@ cd settingslauncher && ./gradlew assembleDebug
 cd devoptions && ./gradlew assembleDebug
 cd appdisabler && ./gradlew assembleDebug
 cd adbboot && ./gradlew assembleDebug
+cd settingsrepeater && ./gradlew assembleDebug
 ```
 
 ## License
