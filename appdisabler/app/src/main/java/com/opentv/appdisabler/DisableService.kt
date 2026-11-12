@@ -35,6 +35,9 @@ import android.widget.Toast
  */
 class DisableService : AccessibilityService() {
 
+    /** One enable/disable job for the queue. */
+    data class Job(val packageName: String, val enable: Boolean)
+
     companion object {
         const val ACTION_PROGRESS = "com.opentv.appdisabler.PROGRESS"
         const val ACTION_DONE = "com.opentv.appdisabler.DONE"
@@ -45,9 +48,6 @@ class DisableService : AccessibilityService() {
         const val STATUS_DISABLED = "disabled"
         const val STATUS_ENABLED = "enabled"
         const val STATUS_SKIPPED = "skipped"
-
-        /** One enable/disable job for the queue. */
-        data class Job(val packageName: String, val enable: Boolean)
 
         private val queue = ArrayDeque<Job>()
         private var running = false
