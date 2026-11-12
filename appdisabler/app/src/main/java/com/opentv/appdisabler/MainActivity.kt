@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -40,11 +39,14 @@ import java.util.concurrent.Executors
  * through it). On the A16 root is hidden from apps by KernelSU, so
  * the accessibility path is the one that runs there.
  *
- * The list shows every installed app (system + user), each row with
- * its current state and a switch. A search box filters by name or
- * package, and "Disabled only" shows just the disabled ones. The
- * list loads on a background thread so a 400+ app list stays fast.
- * App Manager never lists itself — toggling it would kill the app.
+ * The list shows every installed app (system + user). Each row's
+ * icon is the state indicator — a circle split diagonally 50/50,
+ * red ✕ half for disabled, green ✓ half for enabled, the matching
+ * half lit — next to the app name and a switch. A search box
+ * filters by name or package, and "Disabled only" shows just the
+ * disabled ones. The list loads on a background thread so a 400+
+ * app list stays fast. App Manager never lists itself — toggling
+ * it would kill the app.
  */
 class MainActivity : AppCompatActivity() {
 
@@ -118,6 +120,9 @@ class MainActivity : AppCompatActivity() {
             onToggle(entry, enable)
         }
         recycler.layoutManager = LinearLayoutManager(this)
+        // Rows are a fixed height, so the list can skip measuring
+        // them on every scroll — keeps 400+ rows smooth.
+        recycler.setHasFixedSize(true)
         recycler.adapter = adapter
 
         // Root check at startup, off the main thread — findSu() runs
@@ -338,16 +343,16 @@ class MainActivity : AppCompatActivity() {
         DisableService.startJobs(this, listOf(job))
     }
 
-    /** One row: app name, package, state, and a toggle switch. */
+    /** One row: split state icon, app name, package, toggle switch. */
     private inner class AppAdapter(
         private val items: List<AppEntry>,
         private val onToggle: (AppEntry, Boolean) -> Unit
     ) : RecyclerView.Adapter<AppAdapter.ViewHolder>() {
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+            val iconView: StateBadgeView = view.findViewById(R.id.row_icon)
             val labelView: TextView = view.findViewById(R.id.row_label)
             val packageView: TextView = view.findViewById(R.id.row_package)
-            val stateView: TextView = view.findViewById(R.id.row_state)
             val switchView: SwitchMaterial = view.findViewById(R.id.row_switch)
         }
 
@@ -375,13 +380,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         private fun bindState(holder: ViewHolder, entry: AppEntry) {
-            if (entry.disabled) {
-                holder.stateView.text = "Disabled"
-                holder.stateView.setTextColor(Color.parseColor("#EF4444"))
-            } else {
-                holder.stateView.text = "Enabled"
-                holder.stateView.setTextColor(Color.parseColor("#4ADE80"))
-            }
+            // The split icon is the state indicator: it lights the
+            // half that matches the app's current state.
+            holder.iconView.setDisabled(entry.disabled)
         }
 
         override fun getItemCount(): Int = items.size
