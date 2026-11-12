@@ -13,6 +13,14 @@
         <item name="android:textColorSecondary">@color/ra_text_secondary</item>
     </style>
 
+    <!-- Parent styles for the dotted Ra.* names (AAPT2 requires
+         the intermediate parents to exist). -->
+    <style name="Ra" />
+
+    <style name="Ra.Text" parent="Ra" />
+
+    <style name="Ra.Button" parent="Ra" />
+
     <!-- Primary action: filled blue, 56dp min height (thumb + D-pad friendly). -->
     <style name="Ra.Button.Primary" parent="Widget.Material3.Button">
         <item name="android:minHeight">56dp</item>
