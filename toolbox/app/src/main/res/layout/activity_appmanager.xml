@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- App Manager: enable or disable any installed app.
+     The app list is the main content — it fills the screen below
+     a compact header (title, root status, setup, search + filter)
+     so you just scroll down through the apps. Tap a row to toggle it. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/ra_background"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        style="@style/Ra.Text.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/am_app_name" />
+
+    <!-- Root status — one slim line -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        app:cardBackgroundColor="@color/ra_surface"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:contentPadding="12dp"
+        app:strokeColor="@color/ra_outline"
+        app:strokeWidth="1dp">
+
+        <TextView
+            android:id="@+id/root_status"
+            style="@style/Ra.Text.Body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/am_root_checking" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Setup (accessibility) — only needed when there is no root -->
+    <TextView
+        style="@style/Ra.Text.SectionLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:text="@string/am_section_setup" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:cardBackgroundColor="@color/ra_surface"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:contentPadding="12dp"
+        app:strokeColor="@color/ra_outline"
+        app:strokeWidth="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/Ra.Text.Body"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/am_setup_body" />
+
+            <Button
+                android:id="@+id/accessibility_button"
+                style="@style/Ra.Button.Tonal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:minHeight="48dp"
+                android:text="@string/am_enable_accessibility" />
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Search + filter -->
+    <TextView
+        style="@style/Ra.Text.SectionLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:text="@string/am_section_apps" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Ra.Input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="@string/am_search_hint">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/search_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:textSize="17sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/disabled_only"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="@string/am_disabled_only"
+            android:textColor="@color/ra_text_primary"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/list_count"
+            style="@style/Ra.Text.Note"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:text="@string/am_count_loading" />
+
+    </LinearLayout>
+
+    <!-- The app list — fills the rest of the screen, scroll down -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/app_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="4dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingBottom="8dp"
+        android:scrollbars="vertical" />
+
+    <!-- Status — one slim line, not a card -->
+    <TextView
+        android:id="@+id/status_text"
+        style="@style/Ra.Text.Status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="@string/am_status_idle" />
+
+</LinearLayout>

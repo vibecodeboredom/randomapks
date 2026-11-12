@@ -8,17 +8,15 @@ import android.util.TypedValue
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.card.MaterialCardView
 
 /**
  * Toolbox — one app, one menu. Every tool from the old standalone
  * apps lives here as a screen you open from this menu and come back
- * from with the Back button. App Manager is the exception: it stays
- * its own app (com.opentv.appdisabler) so the accessibility service
- * Chuni already granted keeps working — this menu just launches
- * into it.
+ * from with the Back button — including App Manager, which is now
+ * fully embedded (its own list, root toggling, and accessibility
+ * service all live in this app).
  */
 class MainActivity : AppCompatActivity() {
 
@@ -41,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         Tool(
             "App Manager",
             "Enable or disable apps — root first, big list with search"
-        ) { openAppManager() },
+        ) { open(com.opentv.toolbox.appmanager.AppManagerActivity::class.java) },
         Tool(
             "Settings Repeater",
             "Open a Settings page X times, Y ms apart"
@@ -142,21 +140,5 @@ class MainActivity : AppCompatActivity() {
 
     private fun <T> open(activityClass: Class<T>) {
         startActivity(Intent(this, activityClass))
-    }
-
-    /** App Manager stays its own app so its accessibility service
-     * grant keeps working — just launch into it. */
-    private fun openAppManager() {
-        val launch =
-            packageManager.getLaunchIntentForPackage("com.opentv.appdisabler")
-        if (launch != null) {
-            startActivity(launch)
-        } else {
-            Toast.makeText(
-                this,
-                getString(R.string.menu_app_manager_missing),
-                Toast.LENGTH_LONG
-            ).show()
-        }
     }
 }

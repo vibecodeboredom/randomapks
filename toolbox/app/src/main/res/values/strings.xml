@@ -2,5 +2,4 @@
 <resources>
     <string name="app_name">Toolbox</string>
     <string name="app_tagline">All the tools in one place — tap one to open it.</string>
-    <string name="menu_app_manager_missing">App Manager isn\'t installed — install it first, Toolbox just opens it.</string>
 </resources>
