@@ -19,20 +19,20 @@ import androidx.core.app.NotificationCompat
  * Runs as a foreground service, so Android treats it as work the
  * user can see and doesn't kill it mid-run. The service's own
  * notification is low-importance (it just shows progress); the spam
- * notifications themselves go on a high-importance channel so they
- * actually show up.
+ * notifications themselves go on a high-importance channel
+ * ("spam-v2") so they actually show, peek, and make sound.
  *
- * Two paths per notification:
- * - Normal: NotificationManager.notify(id, notification) from the
- *   app. Works everywhere, but Android rate-limits how fast one
- *   app can post, so very fast / very large runs may get throttled.
- * - Root (when "Use root" is on and a su binary is present): each
- *   post goes through `su -c "cmd notification post …"`, which
- *   posts as the shell and bypasses the app's rate limit, so it can
- *   spam faster. Each root post gets its own tag (spam-1, spam-2,
- *   …) so they stack. If a root post fails — e.g. Android 7 has no
- *   `cmd notification` command at all — that notification falls
- *   back to the normal path instead of stopping the run.
+ * 1.0.1: the spam posts used to go out via root (`su -c "cmd
+ * notification post …"`) when "Use root" was on, to bypass the
+ * app's notification rate limit. That path is gone: `cmd
+ * notification post` takes no channel argument (verified live on
+ * the A16 — `-c` is the content-intent flag, not a channel), so
+ * its posts always land on the shell's own channel and come out
+ * silent and buried in the shade — the user heard no sound and
+ * saw no notifications. Every post now goes through the app's own
+ * NotificationManager on the high-importance channel, so they
+ * sound and show. The channel is created when a run starts, so it
+ * exists before the first post.
  */
 class SpamService : Service() {
 
@@ -44,12 +44,6 @@ class SpamService : Service() {
         const val EXTRA_COUNT = "count"
         const val EXTRA_DELAY = "delay"
 
-        /** Root mode: post each notification via `su -c "cmd
-         * notification post …"` instead of NotificationManager.
-         * Set by MainActivity when the user turns "Use root" on
-         * (and a su binary is present). */
-        const val EXTRA_USE_ROOT = "useRoot"
-
         /** Progress broadcast: count / total. */
         const val BROADCAST_PROGRESS = "com.opentv.notifspammer.PROGRESS"
         const val EXTRA_POSTED = "posted"
@@ -59,15 +53,20 @@ class SpamService : Service() {
         const val BROADCAST_DONE = "com.opentv.notifspammer.DONE"
         const val EXTRA_MESSAGE_DONE = "message"
 
-        private const val CHANNEL_ID = "spam"
+        /**
+         * Spam posts channel. "spam-v2" (not "spam"): once a
+         * channel exists Android won't let the app change its
+         * importance, so a new ID is the only way to get a fresh
+         * high-importance channel on a device that already has the
+         * old one. HIGH = makes sound and peeks/shows.
+         */
+        private const val CHANNEL_ID = "spam-v2"
         private const val SERVICE_CHANNEL_ID = "spam-service"
         private const val SERVICE_NOTIF_ID = 1
 
         /** Spam notifications start here so they never collide with
          * the service's own notification (id 1). */
         private const val SPAM_ID_BASE = 1000
-
-        private const val ROOT_TAG_PREFIX = "spam"
     }
 
     private val handler = Handler(Looper.getMainLooper())
@@ -77,7 +76,6 @@ class SpamService : Service() {
     private var delayMs = 0L
     private var title = ""
     private var message = ""
-    private var useRoot = false
 
     // Explicit type (not inferred): the Runnable's run() schedules
     // itself with postDelayed(postStep, …), and letting the compiler
@@ -91,7 +89,7 @@ class SpamService : Service() {
                 return
             }
             val index = postedCount + 1
-            postOne(index)
+            postNormal(index)
             postedCount++
             updateProgress()
             if (postedCount >= targetCount) {
@@ -102,31 +100,9 @@ class SpamService : Service() {
         }
     }
 
-    /** Post notification number [index] (1-based). Root first if
-     * enabled; fall back to the normal path when the root post
-     * fails, so one bad post never kills the run. */
-    private fun postOne(index: Int) {
-        if (useRoot) {
-            // Root post runs on a background thread so the su exec
-            // can't block the main thread for long. Join with a
-            // timeout: the first su call can hang on SuperSU's
-            // "grant?" prompt, and an unbounded join would freeze
-            // the app. On timeout (or any failure) fall back to the
-            // normal path for this notification.
-            var ok = false
-            val t = Thread {
-                ok = RootHelper.postNotification(title, "$ROOT_TAG_PREFIX-$index", message)
-            }
-            t.start()
-            t.join(5000)
-            if (ok) return
-            // Root post failed or timed out (e.g. no `cmd
-            // notification` on Android 7) — fall through to the
-            // normal path.
-        }
-        postNormal(index)
-    }
-
+    /** Post notification number [index] (1-based) on the
+     * high-importance channel, so it makes sound and shows. Each
+     * gets its own ID so the posts stack in the shade. */
     private fun postNormal(index: Int) {
         val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         ensureSpamChannel(nm)
@@ -134,6 +110,7 @@ class SpamService : Service() {
             .setContentTitle(title)
             .setContentText(message)
             .setSmallIcon(R.drawable.ic_launcher)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .build()
         nm.notify(SPAM_ID_BASE + index, notification)
@@ -151,17 +128,17 @@ class SpamService : Service() {
                 message = intent.getStringExtra(EXTRA_MESSAGE).orEmpty()
                 targetCount = intent.getIntExtra(EXTRA_COUNT, 0)
                 delayMs = intent.getLongExtra(EXTRA_DELAY, 0L)
-                // Root mode only actually runs as root when a su
-                // binary is present; otherwise fall back to the
-                // normal path for this run.
-                useRoot = intent.getBooleanExtra(EXTRA_USE_ROOT, false) &&
-                    RootHelper.isRootAvailable()
                 if (targetCount < 1 || title.isEmpty() && message.isEmpty()) {
                     stopSelf()
                     return START_NOT_STICKY
                 }
                 postedCount = 0
                 running = true
+                // Create the spam channel up front, before the
+                // first post, so it exists no matter what.
+                ensureSpamChannel(
+                    getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                )
                 startForeground(SERVICE_NOTIF_ID, buildServiceNotification("Starting…"))
                 handler.post(postStep)
             }
@@ -195,7 +172,19 @@ class SpamService : Service() {
                 CHANNEL_ID,
                 "Notification Spam",
                 NotificationManager.IMPORTANCE_HIGH
-            )
+            ).apply {
+                // Explicitly the default notification sound (and
+                // vibration): HIGH on its own should already sound,
+                // but a channel created without a sound set can end
+                // up silent on some builds.
+                setSound(
+                    android.media.RingtoneManager.getDefaultUri(
+                        android.media.RingtoneManager.TYPE_NOTIFICATION
+                    ),
+                    null
+                )
+                enableVibration(true)
+            }
             nm.createNotificationChannel(channel)
         }
     }

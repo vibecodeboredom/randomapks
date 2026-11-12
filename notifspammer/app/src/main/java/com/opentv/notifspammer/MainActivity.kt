@@ -14,9 +14,7 @@ import android.provider.Settings
 import android.net.Uri
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.View
 import android.widget.Button
-import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -48,18 +46,19 @@ import androidx.core.content.ContextCompat
  * asks when Start is tapped (and the run starts regardless — the
  * request is what makes the notifications actually show).
  *
- * On a rooted device there's also a "Use root (su)" option: each
- * notification is posted from a root shell — `su -c "cmd
- * notification post …"` — which posts as the shell and bypasses the
- * app's own notification rate limit, so it can spam faster. The
- * checkbox only shows when a su binary is found, and it defaults
- * to on. On a non-rooted device the option is hidden and the normal
- * NotificationManager path is used. On Android 7 the root command
- * doesn't exist (`cmd notification` came later), so a failed root
- * post falls back to the normal path instead of stopping the run.
+ * 1.0.1: the "Use root (su)" option is gone. It used to post each
+ * notification via `su -c "cmd notification post …"` to bypass the
+ * app's rate limit, but `cmd notification post` takes no channel
+ * argument, so those posts landed on the shell's own channel and
+ * came out silent and buried — the user heard no sound and saw no
+ * notifications. All posts now go through the app's own
+ * NotificationManager on a high-importance channel, so they sound
+ * and show. Very fast runs (tiny delays) may be throttled by
+ * Android's per-app rate limit; that is the trade-off for posts
+ * that actually sound.
  *
- * Last inputs (title, message, count, delay, use root) are
- * remembered in SharedPreferences and restored on launch.
+ * Last inputs (title, message, count, delay) are remembered in
+ * SharedPreferences and restored on launch.
  */
 class MainActivity : AppCompatActivity() {
 
@@ -67,7 +66,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var messageInput: EditText
     private lateinit var countInput: EditText
     private lateinit var delayInput: EditText
-    private lateinit var rootCheckbox: CheckBox
     private lateinit var startButton: Button
     private lateinit var stopButton: Button
     private lateinit var statusText: TextView
@@ -105,7 +103,6 @@ class MainActivity : AppCompatActivity() {
         messageInput = findViewById(R.id.message_input)
         countInput = findViewById(R.id.count_input)
         delayInput = findViewById(R.id.delay_input)
-        rootCheckbox = findViewById(R.id.root_checkbox)
         startButton = findViewById(R.id.start_button)
         stopButton = findViewById(R.id.stop_button)
         statusText = findViewById(R.id.status_text)
@@ -117,12 +114,6 @@ class MainActivity : AppCompatActivity() {
         messageInput.setText(prefs.getString("message", "Hello!"))
         countInput.setText(prefs.getString("count", "10"))
         delayInput.setText(prefs.getString("delay", "500"))
-        // Root option: only shown when a su binary is present, and
-        // on by default then. Hidden entirely on non-rooted devices.
-        val rootAvailable = RootHelper.isRootAvailable()
-        rootCheckbox.visibility = if (rootAvailable) View.VISIBLE else View.GONE
-        rootCheckbox.isChecked =
-            prefs.getBoolean("useRoot", true) && rootAvailable
 
         val saveWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
@@ -133,7 +124,6 @@ class MainActivity : AppCompatActivity() {
         messageInput.addTextChangedListener(saveWatcher)
         countInput.addTextChangedListener(saveWatcher)
         delayInput.addTextChangedListener(saveWatcher)
-        rootCheckbox.setOnCheckedChangeListener { _, _ -> saveInputs() }
 
         startButton.setOnClickListener { startRun() }
         stopButton.setOnClickListener { stopRun() }
@@ -227,10 +217,6 @@ class MainActivity : AppCompatActivity() {
             putExtra(SpamService.EXTRA_MESSAGE, message)
             putExtra(SpamService.EXTRA_COUNT, count)
             putExtra(SpamService.EXTRA_DELAY, delay)
-            putExtra(
-                SpamService.EXTRA_USE_ROOT,
-                rootCheckbox.isChecked && RootHelper.isRootAvailable()
-            )
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(serviceIntent)
@@ -256,7 +242,6 @@ class MainActivity : AppCompatActivity() {
         messageInput.isEnabled = false
         countInput.isEnabled = false
         delayInput.isEnabled = false
-        rootCheckbox.isEnabled = false
         startButton.isEnabled = false
         stopButton.isEnabled = true
         stopButton.requestFocus()
@@ -267,7 +252,6 @@ class MainActivity : AppCompatActivity() {
         messageInput.isEnabled = true
         countInput.isEnabled = true
         delayInput.isEnabled = true
-        rootCheckbox.isEnabled = true
         startButton.isEnabled = true
         stopButton.isEnabled = false
     }
@@ -279,7 +263,6 @@ class MainActivity : AppCompatActivity() {
             .putString("message", messageInput.text.toString())
             .putString("count", countInput.text.toString())
             .putString("delay", delayInput.text.toString())
-            .putBoolean("useRoot", rootCheckbox.isChecked)
             .apply()
     }
 }

@@ -10,7 +10,6 @@
     <string name="count_hint">e.g. 10</string>
     <string name="delay_label">Delay (Y) — ms between each post</string>
     <string name="delay_hint">e.g. 500</string>
-    <string name="root_label">Use root (su) — post via a root shell, spams faster</string>
     <string name="status_ready">Ready</string>
     <string name="start_button">Start</string>
     <string name="stop_button">Stop</string>

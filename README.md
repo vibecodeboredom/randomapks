@@ -27,7 +27,7 @@ Opens a chosen Settings page X times in a row, waiting Y ms between each opening
 Lists the Device Admin features and gives each one a button to trigger it — lock now, set lock screen password, password quality/length/expiration, maximum time to lock, disable camera, keyguard features, storage encryption, and permitted accessibility services. The app is its own device admin (Enable device admin button opens the system Activate prompt); the feature buttons stay disabled until it is active. Every call is guarded — a failure is a toast, never a crash. There is deliberately no way to erase the device in this app.
 
 ### Notification Spammer (`notifspammer/`)
-Posts a bunch of notifications on demand — title, message, count (X), delay between posts (Y ms), Start and Stop. Each notification gets its own ID so they stack in the shade. Runs in a foreground service so it isn't killed mid-run. On a rooted device there's a "Use root (su)" option that posts each notification via `su -c "cmd notification post …"`, bypassing the app's notification rate limit so it can spam faster (Android 8+; on Android 7 the root command doesn't exist and failed posts fall back to the normal path). Android 7.1.2 supported (minSdk 25); on Android 13+ it asks for the notification permission at runtime.
+Posts a bunch of notifications on demand — title, message, count (X), delay between posts (Y ms), Start and Stop. Each notification gets its own ID so they stack in the shade. Runs in a foreground service so it isn't killed mid-run. Posts go out on a high-importance channel ("spam-v2", default notification sound) so they make sound and peek/show. (1.0.1: the old "Use root (su)" option is gone — `cmd notification post` takes no channel argument, so root posts landed on the shell's own channel and came out silent and buried. All posts now go through the app's own NotificationManager.) Android 7.1.2 supported (minSdk 25); on Android 13+ it asks for the notification permission at runtime.
 
 ## Install
 
@@ -40,7 +40,7 @@ adb install -r AppDisabler-1.0.0.apk
 adb install -r AdbBoot-1.0.0.apk
 adb install -r SettingsRepeater-1.0.0.apk
 adb install -r AdminTools-1.0.0.apk
-adb install -r NotificationSpammer-1.0.0.apk
+adb install -r NotificationSpammer-1.0.1.apk
 ```
 
 No ADB? Copy the APK to a USB flash drive, plug it into the device, open it with the file manager, and install.
