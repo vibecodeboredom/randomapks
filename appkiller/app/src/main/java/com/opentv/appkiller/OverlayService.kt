@@ -157,14 +157,18 @@ class OverlayService : Service() {
             setTextColor(Color.WHITE)
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
             minimumHeight = dp(36)
+            minWidth = 0
+            setPadding(0, 0, 0, 0)
             background = redButtonBg()
             setOnClickListener { killOnce() }
         }
         spamButton = Button(this).apply {
-            text = "Spam Kill x100"
+            text = "Spam ×100"
             setTextColor(Color.WHITE)
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
             minimumHeight = dp(36)
+            minWidth = 0
+            setPadding(0, 0, 0, 0)
             background = redButtonBg()
             setOnClickListener { spamKill() }
         }
@@ -173,12 +177,14 @@ class OverlayService : Service() {
             setTextColor(Color.WHITE)
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
             minimumHeight = dp(36)
+            minWidth = 0
+            setPadding(0, 0, 0, 0)
             background = greyButtonBg()
             setOnClickListener { stopOverlay() }
         }
         buttonRow.addView(killButton, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
-        buttonRow.addView(spamButton, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.4f).apply { leftMargin = dp(8) })
-        buttonRow.addView(closeButton, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { leftMargin = dp(8) })
+        buttonRow.addView(spamButton, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.5f).apply { leftMargin = dp(6) })
+        buttonRow.addView(closeButton, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { leftMargin = dp(6) })
         root.addView(buttonRow)
 
         // Dragging: the header is the handle. Track the finger's raw
@@ -272,7 +278,14 @@ class OverlayService : Service() {
                         packageText.text = pkg
                         killButton.isEnabled = !isSelf
                         spamButton.isEnabled = !isSelf
-                        if (isSelf) statusText.text = "That's me — can't kill myself"
+                        if (isSelf) {
+                            statusText.text = "That's me — can't kill myself"
+                        } else if (statusText.text == "That's me — can't kill myself") {
+                            // Don't leave the "that's me" note up once
+                            // a different app is in front; kill results
+                            // ("Killed X") stay until the next result.
+                            statusText.text = ""
+                        }
                     }
                 }
                 try {
