@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ak_app_name">App Killer</string>
+    <string name="ak_app_tagline">A floating overlay that shows the app in front — and kills it</string>
+    <string name="ak_root_checking">Root: checking…</string>
+    <string name="ak_overlay_checking">Draw over apps: checking…</string>
+    <string name="ak_overlay_permission_button">Allow draw over other apps</string>
+    <string name="ak_usage_access_button">Allow usage access (fallback)</string>
+    <string name="ak_start_button">Start overlay</string>
+    <string name="ak_stop_button">Stop overlay</string>
+    <string name="ak_note">How it works: the overlay floats on top of whatever app is open and shows its name and package, updated about once a second. "Kill" force-stops it once, as root. "Spam Kill x100" force-stops it 100 times in a row so it stays dead even if it tries to restart itself. Drag the overlay by its header to move it out of the way.\n\nRoot (su) is required — without it nothing can be killed, and Start stays disabled. Draw-over-apps permission is also required for the overlay to appear. Usage access is only a fallback for finding the foreground app if the root detection ever fails.\n\nIt never kills itself. Everything else — including system apps — is fair game, so be careful what is in front when you tap Kill.</string>
+    <string name="ak_section_status">Status</string>
+    <string name="ak_section_setup">Setup</string>
+    <string name="ak_section_overlay">Overlay</string>
+</resources>

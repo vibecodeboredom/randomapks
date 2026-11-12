@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Plain Android (not Android TV-only): it runs on the TVs and on
+         the phones, so the launcher declares both LAUNCHER and
+         LEANBACK_LAUNCHER. -->
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
+    <!-- Settings Repeater + Notification Spammer + Ringtone Spammer +
+         App Killer run their loops in foreground services, so Android
+         treats them as visible work and doesn't kill them mid-run.
+         specialUse is the catch-all type for this kind of work; the
+         app is not on the Play Store, so no store declaration is
+         needed. REQUEST_IGNORE_BATTERY_OPTIMIZATIONS lets the app ask
+         to be exempt from Doze / App Standby. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <!-- Device admin: Settings Repeater and Admin Tools are each
+         their own device admin (separate receivers, separate
+         policies). -->
+    <uses-permission android:name="android.permission.BIND_DEVICE_ADMIN" />
+    <!-- AdbBoot: BOOT_COMPLETED so it can re-enable ADB after a
+         reboot; INTERNET for the 127.0.0.1:5555 status check;
+         WRITE_SECURE_SETTINGS is declared only so it can be granted
+         once from a PC for the wireless-debugging fallback. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <!-- Notification Spammer: POST_NOTIFICATIONS at runtime on
+         Android 13+. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- App Killer: the floating overlay needs draw-over-apps;
+         PACKAGE_USAGE_STATS is the fallback for finding the
+         foreground app if the root dumpsys path ever fails. -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:banner="@drawable/ic_banner"
+        android:theme="@style/Theme.Toolbox">
+
+        <!-- The menu — the only launcher entry. Every tool is a
+             screen you navigate back from. -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Tool screens (not launchers — opened from the menu). -->
+        <activity
+            android:name=".settings.SettingsLauncherActivity"
+            android:exported="false" />
+        <activity
+            android:name=".devoptions.DevOptionsActivity"
+            android:exported="false"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".repeater.RepeaterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".adbboot.AdbBootActivity"
+            android:exported="false" />
+        <activity
+            android:name=".admintools.AdminToolsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".notifspammer.NotifSpammerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".appkiller.AppKillerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ringtonespammer.RingtoneSpammerActivity"
+            android:exported="false" />
+
+        <!-- Settings Repeater's loop. -->
+        <service
+            android:name=".repeater.RepeatService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
+        <!-- Notification Spammer's loop. -->
+        <service
+            android:name=".notifspammer.SpamService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
+        <!-- Ringtone Spammer's loop. -->
+        <service
+            android:name=".ringtonespammer.RingtoneSpamService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
+        <!-- App Killer's floating overlay. -->
+        <service
+            android:name=".appkiller.OverlayService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
+
+        <!-- Settings Repeater's device admin (no policies — the role
+             only stops accidental force-stop / uninstall). -->
+        <receiver
+            android:name=".repeater.RepeaterAdminReceiver"
+            android:exported="false"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin_repeater" />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+        </receiver>
+        <!-- Admin Tools' device admin (the policies its features
+             use). Deliberately no erase/reset policy — the app has
+             no way to erase the device. -->
+        <receiver
+            android:name=".admintools.AdminToolsAdminReceiver"
+            android:exported="false"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin_admintools" />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- AdbBoot: re-enable ADB on TCP 5555 at boot. -->
+        <receiver
+            android:name=".adbboot.BootReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Shizuku client support (AdbBoot). The provider is how
+             the app finds Shizuku's binder. -->
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:multiprocess="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+    </application>
+
+</manifest>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ab_app_name">Adb Boot</string>
+    <string name="ab_app_tagline">ADB on port 5555, automatically at boot</string>
+    <string name="ab_enable_button">Enable ADB on port 5555 now</string>
+    <string name="ab_allow_shizuku">Allow in Shizuku</string>
+    <string name="ab_setup_note">One-time setup (see README): install Shizuku and start it once (wireless debugging on Android 11+, or once from a PC), then open this app and tap “Allow in Shizuku”. On Android 13+ Shizuku starts itself at boot on a trusted Wi-Fi network. This app then switches ADB to port 5555 at every boot — and if this device keeps the permanent setting, it only ever needs to run once.</string>
+    <string name="ab_section_status">Status</string>
+    <string name="ab_section_setup">Setup</string>
+</resources>

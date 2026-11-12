@@ -8,6 +8,9 @@ A small collection of tiny Android apps that each do one thing — no big projec
 
 ## Apps
 
+### Toolbox (`toolbox/`)
+All the tools in one app, behind one menu. Tap a row to open that tool, Back to come back to the menu: Settings Launcher, DevOptions, App Manager, Settings Repeater, AdbBoot, Admin Tools, Notification Spammer, App Killer, and Ringtone Spammer (new — pick a ringtone or notification sound and play it X times, Y ms apart, in a foreground service so it keeps going in the background). App Manager is the one exception to the bundling: it stays its own app (`com.opentv.appdisabler`) so the accessibility service already granted to it keeps working — the Toolbox menu just launches into it. The standalone apps below still exist and still build on their own.
+
 ### Settings Launcher (`settingslauncher/`)
 One screen of big, remote-friendly buttons that jump straight to a specific Settings screen — About, Developer Options, Wi-Fi, Bluetooth, Network & Internet, Display, Sound, Storage, Apps, Security, Location, Accessibility, Date & Time, Language, Home App, and Settings Home. Built for a plain-Android TV box (Android 9) that hides most of its Settings options. A screen the device can't open shows a toast instead of crashing.
 
@@ -45,6 +48,7 @@ adb install -r SettingsRepeater-1.0.6.apk
 adb install -r AdminTools-1.0.1.apk
 adb install -r NotificationSpammer-1.0.2.apk
 adb install -r AppKiller-1.0.2.apk
+adb install -r Toolbox-1.0.0.apk
 ```
 
 No ADB? Copy the APK to a USB flash drive, plug it into the device, open it with the file manager, and install.
@@ -60,6 +64,7 @@ cd settingsrepeater && ./gradlew assembleDebug
 cd admintools && ./gradlew assembleDebug
 cd notifspammer && ./gradlew assembleDebug
 cd appkiller && ./gradlew assembleDebug
+cd toolbox && ./gradlew assembleDebug
 ```
 
 ## License

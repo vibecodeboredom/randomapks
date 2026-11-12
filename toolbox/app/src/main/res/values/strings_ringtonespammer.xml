@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="rs_app_name">Ringtone Spammer</string>
+    <string name="rs_app_tagline">Play a ringtone X times, Y ms apart</string>
+    <string name="rs_section_sound">Sound</string>
+    <string name="rs_pick_sound">Pick a sound…</string>
+    <string name="rs_sound_default_notification">Default notification sound</string>
+    <string name="rs_sound_picked">Picked sound</string>
+    <string name="rs_section_run">Run</string>
+    <string name="rs_count_label">Count (X) — how many times to play it</string>
+    <string name="rs_count_hint">e.g. 10</string>
+    <string name="rs_delay_label">Delay (Y) — ms between each play</string>
+    <string name="rs_delay_hint">e.g. 500</string>
+    <string name="rs_status_ready">Ready</string>
+    <string name="rs_start_button">Start</string>
+    <string name="rs_stop_button">Stop</string>
+    <string name="rs_note">The sound plays X times, Y ms apart. The first play starts straight away; the rest follow Y ms apart. Stop cancels whatever is left. Tap “Pick a sound…” to choose any ringtone or notification sound — or leave the default.</string>
+</resources>

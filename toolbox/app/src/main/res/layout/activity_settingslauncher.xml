@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings Launcher: one screen of big shortcut buttons.
+     Layout: header, then a 2-column grid of large buttons.
+     Buttons are built in MainActivity (MaterialButton, primary style);
+     the first one takes focus so a remote/D-pad works straight away. -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/ra_background"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="24dp">
+
+        <TextView
+            style="@style/Ra.Text.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sl_app_name" />
+
+        <TextView
+            style="@style/Ra.Text.Tagline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="@string/sl_app_tagline" />
+
+        <TextView
+            style="@style/Ra.Text.SectionLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/sl_section_screens" />
+
+        <GridLayout
+            android:id="@+id/shortcut_grid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:columnCount="2" />
+
+    </LinearLayout>
+
+</ScrollView>

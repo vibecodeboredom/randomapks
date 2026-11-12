@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="at_app_name">Admin Tools</string>
+    <string name="at_app_tagline">Device Admin features, one button each</string>
+    <string name="at_status_not_admin">Not a device admin yet — tap “Enable device admin” below. The buttons stay off until then.</string>
+    <string name="at_status_admin">Device admin active — the buttons below work.</string>
+    <string name="at_admin_button">Enable device admin</string>
+
+    <string name="at_lock_label">Lock device now</string>
+    <string name="at_lock_button">Lock now</string>
+
+    <string name="at_password_label">Set lock screen password</string>
+    <string name="at_password_hint">New password</string>
+    <string name="at_password_button">Set password</string>
+
+    <string name="at_quality_label">Password quality</string>
+    <string name="at_quality_button">Apply quality</string>
+
+    <string name="at_length_label">Minimum password length</string>
+    <string name="at_length_hint">e.g. 4</string>
+    <string name="at_length_button">Apply length</string>
+
+    <string name="at_max_lock_label">Maximum time to lock (seconds)</string>
+    <string name="at_max_lock_hint">e.g. 60</string>
+    <string name="at_max_lock_button">Apply</string>
+
+    <string name="at_expiry_label">Password expiration (days)</string>
+    <string name="at_expiry_hint">e.g. 90 (0 = never)</string>
+    <string name="at_expiry_button">Apply</string>
+
+    <string name="at_camera_label">Disable camera</string>
+
+    <string name="at_keyguard_label">Keyguard features to disable</string>
+    <string name="at_keyguard_widgets">Widgets</string>
+    <string name="at_keyguard_camera">Secure camera</string>
+    <string name="at_keyguard_fingerprint">Fingerprint</string>
+    <string name="at_keyguard_face">Face</string>
+    <string name="at_keyguard_trust">Trust agents</string>
+    <string name="at_keyguard_button">Apply keyguard features</string>
+
+    <string name="at_encryption_label">Storage encryption</string>
+    <string name="at_encryption_button">Require encryption</string>
+
+    <string name="at_a11y_label">Permitted accessibility services</string>
+    <string name="at_a11y_hint">Package names, comma-separated</string>
+    <string name="at_a11y_apply_button">Apply restriction</string>
+    <string name="at_a11y_clear_button">Clear restriction</string>
+
+    <string name="at_note">Every button needs the app to be a device admin first. Many of these are restricted or deprecated on newer Android and may fail — the app shows a toast instead of crashing. Nothing here can erase the device.</string>
+    <string name="at_section_admin">Device admin</string>
+    <string name="at_section_lock">Lock now</string>
+    <string name="at_section_password">Password</string>
+    <string name="at_section_lockscreen">Lock screen</string>
+    <string name="at_section_device">Device</string>
+</resources>

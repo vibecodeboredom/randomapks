@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ns_app_name">Notification Spammer</string>
+    <string name="ns_app_tagline">Post a bunch of notifications, X of them, Y ms apart</string>
+    <string name="ns_title_label">Title — the notification title</string>
+    <string name="ns_title_hint">e.g. Spam</string>
+    <string name="ns_message_label">Message — the notification text</string>
+    <string name="ns_message_hint">e.g. Hello!</string>
+    <string name="ns_count_label">Count (X) — how many notifications to post</string>
+    <string name="ns_count_hint">e.g. 10</string>
+    <string name="ns_delay_label">Delay (Y) — ms between each post</string>
+    <string name="ns_delay_hint">e.g. 500</string>
+    <string name="ns_status_ready">Ready</string>
+    <string name="ns_start_button">Start</string>
+    <string name="ns_stop_button">Stop</string>
+    <string name="ns_note">Each notification gets its own ID, so they stack in the shade instead of replacing each other. The first one posts straight away; the rest follow Y ms apart. Stop cancels whatever is left. On Android 13+ the app asks for the notification permission when you tap Start — allow it or nothing shows up.</string>
+    <string name="ns_section_message">Message</string>
+    <string name="ns_section_run">Run</string>
+</resources>

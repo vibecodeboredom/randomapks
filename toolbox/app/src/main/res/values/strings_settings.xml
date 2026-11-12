@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sl_app_name">Settings Launcher</string>
+    <string name="sl_app_tagline">Tap a button to jump straight to that Settings screen.</string>
+    <string name="sl_section_screens">Settings screens</string>
+</resources>
