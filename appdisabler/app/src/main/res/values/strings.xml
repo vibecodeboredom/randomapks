@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">App Disabler</string>
-    <string name="app_tagline">Disable system apps without ADB. Pick the apps, tap Disable, and it taps through Settings for you.</string>
+    <string name="app_name">App Manager</string>
+    <string name="app_tagline">Enable or disable any app on the device. Tap a row to flip it — root does it instantly when available, otherwise it taps through Settings for you.</string>
     <string name="enable_accessibility">Turn on accessibility service</string>
-    <string name="pick_apps">2. Pick the apps to disable</string>
-    <string name="disable_selected">Disable selected</string>
-    <string name="accessibility_description">App Disabler taps the Disable button in Settings for the apps you pick, so you can disable bloatware without ADB.</string>
+    <string name="accessibility_description">App Manager taps the Disable or Enable button in Settings for the apps you pick, so you can manage apps without ADB or root.</string>
     <string name="section_setup">Setup</string>
-    <string name="section_apps">Pick apps</string>
-    <string name="setup_body">Turn on the App Disabler accessibility service first — it taps Disable in Settings for the apps you pick, so bloatware goes away without ADB.</string>
-    <string name="status_idle">Nothing disabled yet — pick apps above and tap Disable.</string>
+    <string name="section_apps">Apps</string>
+    <string name="setup_body">No root on this device? Turn on the App Manager accessibility service and toggles will tap Disable / Enable in Settings for you instead. With root, this step is not needed.</string>
+    <string name="search_hint">Search apps…</string>
+    <string name="disabled_only">Disabled only</string>
+    <string name="count_loading">Loading…</string>
+    <string name="root_checking">Checking for root…</string>
+    <string name="status_idle">Nothing toggled yet — tap a row to enable or disable an app.</string>
 </resources>
