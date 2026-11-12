@@ -1,8 +1,10 @@
-# Useful APKs
+# Random APKs
 
-A small collection of tiny Android apps that each do one useful thing — no big projects here, just the few APKs that earn their keep. Each app lives in its own folder and builds on its own; one CI run builds them all.
+A small collection of tiny Android apps that each do one thing — no big projects here, just the few APKs that earn their keep. Each app lives in its own folder and builds on its own; one CI run builds them all.
 
 ⚠️ Vibecoded — built quickly for personal use.
+
+> Formerly `usefulapks` — renamed to `randomapks` when the collection grew past just Settings helpers.
 
 ## Apps
 
@@ -24,9 +26,12 @@ Opens a chosen Settings page X times in a row, waiting Y ms between each opening
 ### Admin Tools (`admintools/`)
 Lists the Device Admin features and gives each one a button to trigger it — lock now, set lock screen password, password quality/length/expiration, maximum time to lock, disable camera, keyguard features, storage encryption, and permitted accessibility services. The app is its own device admin (Enable device admin button opens the system Activate prompt); the feature buttons stay disabled until it is active. Every call is guarded — a failure is a toast, never a crash. There is deliberately no way to erase the device in this app.
 
+### Notification Spammer (`notifspammer/`)
+Posts a bunch of notifications on demand — title, message, count (X), delay between posts (Y ms), Start and Stop. Each notification gets its own ID so they stack in the shade. Runs in a foreground service so it isn't killed mid-run. On a rooted device there's a "Use root (su)" option that posts each notification via `su -c "cmd notification post …"`, bypassing the app's notification rate limit so it can spam faster (Android 8+; on Android 7 the root command doesn't exist and failed posts fall back to the normal path). Android 7.1.2 supported (minSdk 25); on Android 13+ it asks for the notification permission at runtime.
+
 ## Install
 
-Grab the APKs from the [latest pre-release](https://github.com/vibecodeboredom/usefulapks/releases) and sideload with ADB:
+Grab the APKs from the [latest pre-release](https://github.com/vibecodeboredom/randomapks/releases) and sideload with ADB:
 
 ```bash
 adb install -r SettingsLauncher-1.0.1.apk
@@ -35,6 +40,7 @@ adb install -r AppDisabler-1.0.0.apk
 adb install -r AdbBoot-1.0.0.apk
 adb install -r SettingsRepeater-1.0.0.apk
 adb install -r AdminTools-1.0.0.apk
+adb install -r NotificationSpammer-1.0.0.apk
 ```
 
 No ADB? Copy the APK to a USB flash drive, plug it into the device, open it with the file manager, and install.
@@ -48,6 +54,7 @@ cd appdisabler && ./gradlew assembleDebug
 cd adbboot && ./gradlew assembleDebug
 cd settingsrepeater && ./gradlew assembleDebug
 cd admintools && ./gradlew assembleDebug
+cd notifspammer && ./gradlew assembleDebug
 ```
 
 ## License

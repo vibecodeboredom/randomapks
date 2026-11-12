@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Plain Android (not Android TV-only): it runs on the TVs and on
+         the phones, so the launcher declares both LAUNCHER and
+         LEANBACK_LAUNCHER. -->
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
+    <!-- Posting notifications needs POST_NOTIFICATIONS at runtime on
+         Android 13+ (API 33); on older versions the permission
+         doesn't exist and notifications just work. The spam loop
+         runs in SpamService, a foreground service, so Android
+         treats it as visible work and doesn't kill it mid-run.
+         specialUse is the catch-all type for this kind of work; the
+         app is not on the Play Store, so no store declaration is
+         needed. REQUEST_IGNORE_BATTERY_OPTIMIZATIONS lets the app
+         ask to be exempt from Doze / App Standby. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:banner="@drawable/ic_banner"
+        android:theme="@style/Theme.NotifSpammer">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <service
+            android:name=".SpamService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
+    </application>
+
+</manifest>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- TV banner: the notification bell on a dark tile, same blue as
+     the other usefulapks apps. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="180dp"
+    android:viewportWidth="320"
+    android:viewportHeight="180">
+    <path
+        android:fillColor="#1A1A20"
+        android:pathData="M0,0h320v180h-320z" />
+    <path
+        android:fillColor="#3B82F6"
+        android:pathData="M160,55m-35,0a35,35 0,1 1,70 0a35,35 0,1 1,-70 0" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M160,77c1.9,0 3.5,-1.6 3.5,-3.5h-7c0,1.9 1.6,3.5 3.5,3.5zM170,66v-8.75c0,-5.37 -2.87,-9.87 -7.88,-11.06L161.6,44c0,-1.45 -1.17,-2.63 -2.63,-2.63s-2.63,1.17 -2.63,2.63v1.19C151.34,46.3 148.5,50.78 148.5,56v8.75l-3.5,3.5v1.75h30V68.25l-3.5,-3.5z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M118,128h84v6h-84zM138,142h44v6h-44z" />
+</vector>

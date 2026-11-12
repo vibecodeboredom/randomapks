@@ -47,6 +47,10 @@ jobs:
         run: ./gradlew assembleDebug --no-daemon
         working-directory: admintools
 
+      - name: Build Notification Spammer
+        run: ./gradlew assembleDebug --no-daemon
+        working-directory: notifspammer
+
       - name: Upload Settings Launcher APK
         uses: actions/upload-artifact@v4
         with:
@@ -82,3 +86,9 @@ jobs:
         with:
           name: AdminTools-debug
           path: admintools/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Upload Notification Spammer APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: NotificationSpammer-debug
+          path: notifspammer/app/build/outputs/apk/debug/app-debug.apk
