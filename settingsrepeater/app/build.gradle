@@ -11,8 +11,8 @@ android {
         applicationId 'com.opentv.settingsrepeater'
         minSdk 25
         targetSdk 35
-        versionCode 6
-        versionName '1.0.5'
+        versionCode 7
+        versionName '1.0.6'
     }
 
     // Fixed debug keystore (committed, same file as the other usefulapks
@@ -51,6 +51,7 @@ android {
 dependencies {
     implementation 'androidx.core:core-ktx:1.13.1'
     implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.12.0'
 
     testImplementation 'junit:junit:4.13.2'
 }

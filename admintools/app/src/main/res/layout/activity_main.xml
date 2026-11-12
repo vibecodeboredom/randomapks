@@ -1,402 +1,496 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Admin Tools: Device Admin features, grouped by what they do.
+     Flow: 1) admin status + Enable admin (the prerequisite),
+     2) Lock now, 3) Password rules, 4) Lock screen,
+     5) Device. Each feature keeps its label + control + button
+     together inside its group card. -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#121218"
-    android:padding="24dp">
+    android:background="@color/ra_background"
+    android:padding="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingBottom="24dp">
 
         <TextView
+            style="@style/Ra.Text.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:textColor="#FFFFFF"
-            android:textSize="28sp"
-            android:textStyle="bold" />
+            android:text="@string/app_name" />
 
         <TextView
+            style="@style/Ra.Text.Tagline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/app_tagline"
-            android:textColor="#AAAAAA"
-            android:textSize="17sp" />
+            android:layout_marginTop="6dp"
+            android:text="@string/app_tagline" />
 
+        <!-- 1 · Admin status (prerequisite first) -->
         <TextView
-            android:id="@+id/status_text"
+            style="@style/Ra.Text.SectionLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="@string/status_not_admin"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp" />
+            android:text="@string/section_admin" />
 
-        <Button
-            android:id="@+id/admin_button"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/button_bg"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:text="@string/admin_button"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp" />
+            android:layout_marginTop="12dp"
+            app:cardBackgroundColor="@color/ra_surface"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:contentPadding="16dp"
+            app:strokeColor="@color/ra_outline"
+            app:strokeWidth="1dp">
 
-        <!-- 1. Lock device now -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/status_text"
+                    style="@style/Ra.Text.Status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/status_not_admin" />
+
+                <Button
+                    android:id="@+id/admin_button"
+                    style="@style/Ra.Button.Primary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/admin_button" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 2 · Lock now -->
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="@string/lock_label"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/lock_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/button_bg"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:text="@string/lock_button"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp" />
-
-        <!-- 2. Set lock screen password -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="@string/password_label"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/password_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/button_bg"
-            android:hint="@string/password_hint"
-            android:textColorHint="#888888"
-            android:inputType="textPassword"
-            android:padding="16dp"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp" />
-
-        <Button
-            android:id="@+id/password_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/button_bg"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:text="@string/password_button"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp" />
-
-        <!-- 3. Password quality -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="@string/quality_label"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <Spinner
-            android:id="@+id/quality_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/button_bg"
-            android:padding="8dp" />
-
-        <Button
-            android:id="@+id/quality_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/button_bg"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:text="@string/quality_button"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp" />
-
-        <!-- 4. Minimum password length -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="@string/length_label"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/length_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/button_bg"
-            android:hint="@string/length_hint"
-            android:textColorHint="#888888"
-            android:inputType="number"
-            android:padding="16dp"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp" />
-
-        <Button
-            android:id="@+id/length_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/button_bg"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:text="@string/length_button"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp" />
-
-        <!-- 5. Maximum time to lock -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="@string/max_lock_label"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/max_lock_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/button_bg"
-            android:hint="@string/max_lock_hint"
-            android:textColorHint="#888888"
-            android:inputType="number"
-            android:padding="16dp"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp" />
-
-        <Button
-            android:id="@+id/max_lock_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/button_bg"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:text="@string/max_lock_button"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp" />
-
-        <!-- 6. Password expiration -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="@string/expiry_label"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/expiry_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/button_bg"
-            android:hint="@string/expiry_hint"
-            android:textColorHint="#888888"
-            android:inputType="number"
-            android:padding="16dp"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp" />
-
-        <Button
-            android:id="@+id/expiry_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/button_bg"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:text="@string/expiry_button"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp" />
-
-        <!-- 7. Disable camera -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="@string/camera_label"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <Switch
-            android:id="@+id/camera_switch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/camera_label"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp" />
-
-        <!-- 8. Keyguard features -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="@string/keyguard_label"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <CheckBox
-            android:id="@+id/keyguard_widgets"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/keyguard_widgets"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp" />
-
-        <CheckBox
-            android:id="@+id/keyguard_camera"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/keyguard_camera"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp" />
-
-        <CheckBox
-            android:id="@+id/keyguard_fingerprint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/keyguard_fingerprint"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp" />
-
-        <CheckBox
-            android:id="@+id/keyguard_face"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/keyguard_face"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp" />
-
-        <CheckBox
-            android:id="@+id/keyguard_trust"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/keyguard_trust"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp" />
-
-        <Button
-            android:id="@+id/keyguard_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/button_bg"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:text="@string/keyguard_button"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp" />
-
-        <!-- 9. Storage encryption -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="@string/encryption_label"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/encryption_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/button_bg"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:text="@string/encryption_button"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp" />
-
-        <!-- 10. Permitted accessibility services -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="@string/a11y_label"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/a11y_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/button_bg"
-            android:hint="@string/a11y_hint"
-            android:textColorHint="#888888"
-            android:inputType="textNoSuggestions"
-            android:padding="16dp"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp" />
-
-        <Button
-            android:id="@+id/a11y_apply_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/button_bg"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:text="@string/a11y_apply_button"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp" />
-
-        <Button
-            android:id="@+id/a11y_clear_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/button_bg"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:text="@string/a11y_clear_button"
-            android:textColor="#FFFFFF"
-            android:textSize="22sp" />
-
-        <TextView
+            style="@style/Ra.Text.SectionLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="@string/note"
-            android:textColor="#AAAAAA"
-            android:textSize="17sp" />
+            android:text="@string/section_lock" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:cardBackgroundColor="@color/ra_surface"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:contentPadding="16dp"
+            app:strokeColor="@color/ra_outline"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/Ra.Text.FieldLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lock_label" />
+
+                <Button
+                    android:id="@+id/lock_button"
+                    style="@style/Ra.Button.Primary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/lock_button" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 3 · Password -->
+        <TextView
+            style="@style/Ra.Text.SectionLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/section_password" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:cardBackgroundColor="@color/ra_surface"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:contentPadding="16dp"
+            app:strokeColor="@color/ra_outline"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- Set lock screen password -->
+                <TextView
+                    style="@style/Ra.Text.FieldLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/password_label" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Ra.Input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:hint="@string/password_hint"
+                    app:endIconMode="password_toggle">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/password_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:textColor="@color/ra_text_primary"
+                        android:textSize="18sp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/password_button"
+                    style="@style/Ra.Button.Secondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/password_button" />
+
+                <!-- Password quality -->
+                <TextView
+                    style="@style/Ra.Text.FieldLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/quality_label" />
+
+                <Spinner
+                    android:id="@+id/quality_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/ra_input_bg"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="8dp" />
+
+                <Button
+                    android:id="@+id/quality_button"
+                    style="@style/Ra.Button.Secondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/quality_button" />
+
+                <!-- Minimum password length -->
+                <TextView
+                    style="@style/Ra.Text.FieldLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/length_label" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Ra.Input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:hint="@string/length_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/length_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:textColor="@color/ra_text_primary"
+                        android:textSize="18sp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/length_button"
+                    style="@style/Ra.Button.Secondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/length_button" />
+
+                <!-- Password expiration -->
+                <TextView
+                    style="@style/Ra.Text.FieldLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/expiry_label" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Ra.Input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:hint="@string/expiry_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/expiry_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:textColor="@color/ra_text_primary"
+                        android:textSize="18sp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/expiry_button"
+                    style="@style/Ra.Button.Secondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/expiry_button" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 4 · Lock screen -->
+        <TextView
+            style="@style/Ra.Text.SectionLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/section_lockscreen" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:cardBackgroundColor="@color/ra_surface"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:contentPadding="16dp"
+            app:strokeColor="@color/ra_outline"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- Maximum time to lock -->
+                <TextView
+                    style="@style/Ra.Text.FieldLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/max_lock_label" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Ra.Input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:hint="@string/max_lock_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/max_lock_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:textColor="@color/ra_text_primary"
+                        android:textSize="18sp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/max_lock_button"
+                    style="@style/Ra.Button.Secondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/max_lock_button" />
+
+                <!-- Disable camera -->
+                <TextView
+                    style="@style/Ra.Text.FieldLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/camera_label" />
+
+                <Switch
+                    android:id="@+id/camera_switch"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/camera_label"
+                    android:textColor="@color/ra_text_primary"
+                    android:textSize="18sp" />
+
+                <!-- Keyguard features -->
+                <TextView
+                    style="@style/Ra.Text.FieldLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/keyguard_label" />
+
+                <CheckBox
+                    android:id="@+id/keyguard_widgets"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/keyguard_widgets"
+                    android:textColor="@color/ra_text_primary"
+                    android:textSize="18sp" />
+
+                <CheckBox
+                    android:id="@+id/keyguard_camera"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="@string/keyguard_camera"
+                    android:textColor="@color/ra_text_primary"
+                    android:textSize="18sp" />
+
+                <CheckBox
+                    android:id="@+id/keyguard_fingerprint"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="@string/keyguard_fingerprint"
+                    android:textColor="@color/ra_text_primary"
+                    android:textSize="18sp" />
+
+                <CheckBox
+                    android:id="@+id/keyguard_face"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="@string/keyguard_face"
+                    android:textColor="@color/ra_text_primary"
+                    android:textSize="18sp" />
+
+                <CheckBox
+                    android:id="@+id/keyguard_trust"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="@string/keyguard_trust"
+                    android:textColor="@color/ra_text_primary"
+                    android:textSize="18sp" />
+
+                <Button
+                    android:id="@+id/keyguard_button"
+                    style="@style/Ra.Button.Secondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/keyguard_button" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 5 · Device -->
+        <TextView
+            style="@style/Ra.Text.SectionLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/section_device" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:cardBackgroundColor="@color/ra_surface"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:contentPadding="16dp"
+            app:strokeColor="@color/ra_outline"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- Storage encryption -->
+                <TextView
+                    style="@style/Ra.Text.FieldLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/encryption_label" />
+
+                <Button
+                    android:id="@+id/encryption_button"
+                    style="@style/Ra.Button.Secondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/encryption_button" />
+
+                <!-- Permitted accessibility services -->
+                <TextView
+                    style="@style/Ra.Text.FieldLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/a11y_label" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Ra.Input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:hint="@string/a11y_hint">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/a11y_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textNoSuggestions"
+                        android:textColor="@color/ra_text_primary"
+                        android:textSize="18sp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/a11y_apply_button"
+                    style="@style/Ra.Button.Secondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/a11y_apply_button" />
+
+                <Button
+                    android:id="@+id/a11y_clear_button"
+                    style="@style/Ra.Button.Tonal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/a11y_clear_button" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            style="@style/Ra.Text.Note"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/note" />
 
     </LinearLayout>
 

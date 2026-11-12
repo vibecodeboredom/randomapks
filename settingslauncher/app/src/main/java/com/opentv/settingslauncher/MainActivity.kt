@@ -2,14 +2,16 @@ package com.opentv.settingslauncher
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.provider.Settings
 import android.util.TypedValue
 import android.view.Gravity
-import android.widget.Button
 import android.widget.GridLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.button.MaterialButton
 
 /**
  * Quick-launches specific Android Settings screens. Built for a plain
@@ -51,20 +53,24 @@ class MainActivity : AppCompatActivity() {
         val grid = findViewById<GridLayout>(R.id.shortcut_grid)
         val dp = { v: Int -> (v * resources.displayMetrics.density).toInt() }
         for (shortcut in shortcuts) {
-            val button = Button(this).apply {
+            // MaterialButton, filled primary — same look as the buttons
+            // in the other apps, big enough for touch and remote.
+            val button = MaterialButton(this).apply {
                 text = shortcut.label
-                textSize = 20f
-                setTextColor(0xFFFFFFFF.toInt())
-                setBackgroundResource(R.drawable.button_bg)
+                textSize = 18f
+                setTextColor(Color.WHITE)
+                backgroundTintList = ColorStateList.valueOf(Color.parseColor("#3B82F6"))
+                cornerRadius = dp(14)
+                minHeight = dp(64)
                 isFocusable = true
                 isFocusableInTouchMode = true
                 gravity = Gravity.CENTER
-                setPadding(dp(16), dp(20), dp(16), dp(20))
+                setPadding(dp(16), dp(16), dp(16), dp(16))
                 layoutParams = GridLayout.LayoutParams().apply {
                     width = 0
                     height = GridLayout.LayoutParams.WRAP_CONTENT
                     columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
-                    setMargins(dp(8), dp(8), dp(8), dp(8))
+                    setMargins(dp(6), dp(6), dp(6), dp(6))
                 }
                 setOnClickListener { openShortcut(shortcut) }
             }

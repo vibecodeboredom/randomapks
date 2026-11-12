@@ -103,19 +103,22 @@ class OverlayService : Service() {
     private fun showOverlay() {
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
 
+        // Compact overlay: small on purpose, so it stays out of the
+        // way of whatever is underneath while still showing the
+        // foreground app and the Kill / Spam Kill / close buttons.
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(12), dp(10), dp(12), dp(12))
+            setPadding(dp(8), dp(6), dp(8), dp(8))
             background = GradientDrawable().apply {
                 setColor(Color.parseColor("#E61A1A20"))
-                cornerRadius = dp(12).toFloat()
+                cornerRadius = dp(10).toFloat()
             }
         }
 
         val header = TextView(this).apply {
             text = "☠ App Killer — drag me"
             setTextColor(Color.WHITE)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
             setTypeface(null, android.graphics.Typeface.BOLD)
         }
         root.addView(header)
@@ -123,50 +126,53 @@ class OverlayService : Service() {
         appLabelText = TextView(this).apply {
             text = "Detecting…"
             setTextColor(Color.WHITE)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
             setTypeface(null, android.graphics.Typeface.BOLD)
-            setPadding(0, dp(8), 0, 0)
+            setPadding(0, dp(6), 0, 0)
         }
         root.addView(appLabelText)
 
         packageText = TextView(this).apply {
             text = ""
             setTextColor(Color.parseColor("#AAAAAA"))
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)
         }
         root.addView(packageText)
 
         statusText = TextView(this).apply {
             text = ""
             setTextColor(Color.parseColor("#AAAAAA"))
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
-            setPadding(0, dp(4), 0, 0)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)
+            setPadding(0, dp(2), 0, 0)
         }
         root.addView(statusText)
 
         val buttonRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
-            setPadding(0, dp(10), 0, 0)
+            setPadding(0, dp(6), 0, 0)
         }
 
         killButton = Button(this).apply {
             text = "Kill"
             setTextColor(Color.WHITE)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+            minimumHeight = dp(36)
             background = redButtonBg()
             setOnClickListener { killOnce() }
         }
         spamButton = Button(this).apply {
             text = "Spam Kill x100"
             setTextColor(Color.WHITE)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+            minimumHeight = dp(36)
             background = redButtonBg()
             setOnClickListener { spamKill() }
         }
         val closeButton = Button(this).apply {
             text = "✕"
             setTextColor(Color.WHITE)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+            minimumHeight = dp(36)
             background = greyButtonBg()
             setOnClickListener { stopOverlay() }
         }
@@ -215,7 +221,7 @@ class OverlayService : Service() {
             WindowManager.LayoutParams.TYPE_PHONE
         }
         overlayParams = WindowManager.LayoutParams(
-            dp(300),
+            dp(200),
             WindowManager.LayoutParams.WRAP_CONTENT,
             type,
             // NOT_FOCUSABLE: touches pass through to the app underneath
@@ -237,12 +243,12 @@ class OverlayService : Service() {
 
     private fun redButtonBg(): GradientDrawable = GradientDrawable().apply {
         setColor(Color.parseColor("#C62828"))
-        cornerRadius = dp(8).toFloat()
+        cornerRadius = dp(7).toFloat()
     }
 
     private fun greyButtonBg(): GradientDrawable = GradientDrawable().apply {
         setColor(Color.parseColor("#555555"))
-        cornerRadius = dp(8).toFloat()
+        cornerRadius = dp(7).toFloat()
     }
 
     private fun dp(value: Int): Int =

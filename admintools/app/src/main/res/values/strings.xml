@@ -47,4 +47,9 @@
     <string name="a11y_clear_button">Clear restriction</string>
 
     <string name="note">Every button needs the app to be a device admin first. Many of these are restricted or deprecated on newer Android and may fail — the app shows a toast instead of crashing. Nothing here can erase the device.</string>
+    <string name="section_admin">Device admin</string>
+    <string name="section_lock">Lock now</string>
+    <string name="section_password">Password</string>
+    <string name="section_lockscreen">Lock screen</string>
+    <string name="section_device">Device</string>
 </resources>

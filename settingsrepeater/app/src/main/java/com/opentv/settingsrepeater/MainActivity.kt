@@ -63,6 +63,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var delayInput: EditText
     private lateinit var pageSpinner: Spinner
     private lateinit var customInput: EditText
+    private lateinit var customInputLayout: View
     private lateinit var randomCheckbox: CheckBox
     private lateinit var rootCheckbox: CheckBox
     private lateinit var startButton: Button
@@ -104,6 +105,7 @@ class MainActivity : AppCompatActivity() {
         delayInput = findViewById(R.id.delay_input)
         pageSpinner = findViewById(R.id.page_spinner)
         customInput = findViewById(R.id.custom_input)
+        customInputLayout = findViewById(R.id.custom_input_layout)
         randomCheckbox = findViewById(R.id.random_checkbox)
         rootCheckbox = findViewById(R.id.root_checkbox)
         startButton = findViewById(R.id.start_button)
@@ -153,7 +155,9 @@ class MainActivity : AppCompatActivity() {
                 parent: AdapterView<*>, view: View?, position: Int, id: Long
             ) {
                 // Only the "Custom…" entry needs the free-text field.
-                customInput.visibility =
+                // Toggle the whole input box (label + field), not just
+                // the EditText inside it.
+                customInputLayout.visibility =
                     if (pages[position].action == null) View.VISIBLE else View.GONE
                 saveInputs()
             }

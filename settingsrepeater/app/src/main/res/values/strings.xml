@@ -15,4 +15,7 @@
     <string name="stop_button">Stop</string>
     <string name="admin_button">Enable device admin</string>
     <string name="note">The first page opens straight away; the rest follow Y ms apart. Stop cancels whatever is left. If the page is already on screen, opening it again just brings it to the front — the count still advances. Press Back to come back here and see the final count.</string>
+    <string name="section_repeat">Repeat</string>
+    <string name="section_page">Page</string>
+    <string name="section_options">Options</string>
 </resources>

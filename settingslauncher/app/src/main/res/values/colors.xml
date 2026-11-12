@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- RandomApks shared palette: dark, high-contrast, Material 3 inspired -->
+    <color name="ra_background">#101014</color>
+    <color name="ra_surface">#1E1E28</color>
+    <color name="ra_surface_variant">#26262F</color>
+    <color name="ra_outline">#3A3A48</color>
+    <color name="ra_primary">#3B82F6</color>
+    <color name="ra_primary_light">#8AB4F8</color>
+    <color name="ra_on_primary">#FFFFFF</color>
+    <color name="ra_danger">#EF4444</color>
+    <color name="ra_success">#4ADE80</color>
+    <color name="ra_text_primary">#F5F5F7</color>
+    <color name="ra_text_secondary">#B0B0B8</color>
+    <color name="ra_text_hint">#8A8A94</color>
+</resources>

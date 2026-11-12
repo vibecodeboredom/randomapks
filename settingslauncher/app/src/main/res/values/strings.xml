@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">Settings Launcher</string>
     <string name="app_tagline">Tap a button to jump straight to that Settings screen.</string>
+    <string name="section_screens">Settings screens</string>
 </resources>

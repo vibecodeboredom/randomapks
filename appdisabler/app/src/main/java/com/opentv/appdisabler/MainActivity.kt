@@ -6,15 +6,18 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
 import android.provider.Settings
+import android.util.TypedValue
+import android.view.Gravity
 import android.widget.Button
-import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.checkbox.MaterialCheckBox
 
 /**
  * Lists the system apps on the device and disables the ones the user
@@ -31,7 +34,7 @@ class MainActivity : AppCompatActivity() {
     private data class AppEntry(
         val label: String,
         val packageName: String,
-        val checkBox: CheckBox
+        val checkBox: MaterialCheckBox
     )
 
     private val entries = mutableListOf<AppEntry>()
@@ -136,29 +139,67 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /** Lists system apps (the bloatware that needs disabling). */
+    /** Lists system apps (the bloatware that needs disabling).
+     * Each row is a checkbox + two lines: the app name (what the
+     * user reads) and the package name (small, secondary) — so a
+     * long list stays scannable. Rows are separated by a hairline. */
     private fun loadSystemApps(listLayout: LinearLayout) {
         val pm: PackageManager = packageManager
         val apps = pm.getInstalledApplications(PackageManager.GET_META_DATA)
             .filter { it.flags and ApplicationInfo.FLAG_SYSTEM != 0 }
             .sortedBy { it.loadLabel(pm).toString().lowercase() }
         val dp = { v: Int -> (v * resources.displayMetrics.density).toInt() }
-        for (app in apps) {
+        for ((index, app) in apps.withIndex()) {
             val label = app.loadLabel(pm).toString()
-            val checkBox = CheckBox(this).apply {
-                text = "$label\n${app.packageName}"
+            val checkBox = MaterialCheckBox(this).apply {
+                // No text on the box itself; the labels sit beside it.
+                minHeight = dp(48)
+                setPadding(dp(4), 0, dp(4), 0)
+            }
+            val labelView = TextView(this).apply {
+                text = label
                 textSize = 17f
-                setTextColor(0xFFFFFFFF.toInt())
-                setPadding(dp(8), dp(10), dp(8), dp(10))
+                setTextColor(Color.parseColor("#F5F5F7"))
+            }
+            val packageView = TextView(this).apply {
+                text = app.packageName
+                textSize = 13f
+                setTextColor(Color.parseColor("#B0B0B8"))
+            }
+            val texts = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                gravity = Gravity.CENTER_VERTICAL
+                addView(labelView)
+                addView(packageView)
+            }
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(0, dp(8), 0, dp(8))
+                addView(checkBox)
+                addView(texts, LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { leftMargin = dp(8) })
+                // Tapping anywhere on the row toggles the checkbox.
+                setOnClickListener { checkBox.toggle() }
             }
             entries.add(AppEntry(label, app.packageName, checkBox))
-            listLayout.addView(checkBox)
+            listLayout.addView(row)
+            if (index < apps.size - 1) {
+                listLayout.addView(android.view.View(this).apply {
+                    setBackgroundColor(Color.parseColor("#3A3A48"))
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT, dp(1)
+                    )
+                })
+            }
         }
         if (entries.isEmpty()) {
             listLayout.addView(TextView(this).apply {
                 text = "No system apps found."
                 textSize = 17f
-                setTextColor(0xFFAAAAAA.toInt())
+                setTextColor(Color.parseColor("#B0B0B8"))
             })
         }
     }

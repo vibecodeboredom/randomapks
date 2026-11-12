@@ -14,4 +14,6 @@
     <string name="start_button">Start</string>
     <string name="stop_button">Stop</string>
     <string name="note">Each notification gets its own ID, so they stack in the shade instead of replacing each other. The first one posts straight away; the rest follow Y ms apart. Stop cancels whatever is left. On Android 13+ the app asks for the notification permission when you tap Start — allow it or nothing shows up.</string>
+    <string name="section_message">Message</string>
+    <string name="section_run">Run</string>
 </resources>

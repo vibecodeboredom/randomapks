@@ -9,7 +9,7 @@ import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Spinner
-import android.widget.Switch
+import androidx.appcompat.widget.SwitchCompat
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var maxLockButton: Button
     private lateinit var expiryInput: EditText
     private lateinit var expiryButton: Button
-    private lateinit var cameraSwitch: Switch
+    private lateinit var cameraSwitch: SwitchCompat
     private lateinit var keyguardWidgets: CheckBox
     private lateinit var keyguardCamera: CheckBox
     private lateinit var keyguardFingerprint: CheckBox

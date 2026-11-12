@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Developer Options</string>
+    <string name="fallback_title">Developer options isn\'t enabled yet</string>
+    <string name="fallback_body">Go to Settings → Device Preferences → About, then press the Build number 7 times.</string>
+    <string name="open_settings">Open Settings</string>
 </resources>
