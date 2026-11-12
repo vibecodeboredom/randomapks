@@ -7,7 +7,7 @@ import android.provider.Settings
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.opentv.toolbox.devoptions.databinding.ActivityDevoptionsBinding
+import com.opentv.toolbox.databinding.ActivityDevoptionsBinding
 
 /**
  * A tiny launcher: opening this app jumps straight to the system

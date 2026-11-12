@@ -1,4 +1,5 @@
 package com.opentv.toolbox.settings
+import com.opentv.toolbox.R
 
 import android.content.ActivityNotFoundException
 import android.content.Intent

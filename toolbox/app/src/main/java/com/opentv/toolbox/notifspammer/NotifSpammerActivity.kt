@@ -1,4 +1,5 @@
 package com.opentv.toolbox.notifspammer
+import com.opentv.toolbox.R
 
 import android.Manifest
 import android.content.BroadcastReceiver

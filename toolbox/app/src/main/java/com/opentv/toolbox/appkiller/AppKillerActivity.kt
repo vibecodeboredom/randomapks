@@ -1,4 +1,5 @@
 package com.opentv.toolbox.appkiller
+import com.opentv.toolbox.R
 
 import android.content.Intent
 import android.net.Uri

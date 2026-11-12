@@ -1,4 +1,5 @@
 package com.opentv.toolbox.admintools
+import com.opentv.toolbox.R
 
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
