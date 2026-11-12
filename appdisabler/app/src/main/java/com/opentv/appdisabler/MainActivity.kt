@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.TypedValue
@@ -125,9 +126,19 @@ class MainActivity : AppCompatActivity() {
             addAction(DisableService.ACTION_PROGRESS)
             addAction(DisableService.ACTION_DONE)
         }
-        // Plain 2-arg registerReceiver: the RECEIVER_NOT_EXPORTED flag
-        // is API 33+ and this box is Android 9 — don't use it here.
-        registerReceiver(progressReceiver, filter)
+        // The 3-arg registerReceiver(receiver, filter, flags) only
+        // exists from Android 13 (API 33); on older versions the
+        // 2-arg call is the only one, and calling the 3-arg one
+        // would crash with NoSuchMethodError. (This is what lets the
+        // app run on Android 7.1.2 / API 25.) On Android 14+ the
+        // flag is required — without it onResume throws a
+        // SecurityException and the app crashes on launch.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(progressReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            @Suppress("DEPRECATION")
+            registerReceiver(progressReceiver, filter)
+        }
     }
 
     override fun onPause() {
