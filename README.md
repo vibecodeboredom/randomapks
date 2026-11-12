@@ -29,6 +29,9 @@ Lists the Device Admin features and gives each one a button to trigger it — lo
 ### Notification Spammer (`notifspammer/`)
 Posts a bunch of notifications on demand — title, message, count (X), delay between posts (Y ms), Start and Stop. Each notification gets its own ID so they stack in the shade. Runs in a foreground service so it isn't killed mid-run. Posts go out on a high-importance channel ("spam-v2", default notification sound) so they make sound and peek/show. (1.0.1: the old "Use root (su)" option is gone — `cmd notification post` takes no channel argument, so root posts landed on the shell's own channel and came out silent and buried. All posts now go through the app's own NotificationManager.) Android 7.1.2 supported (minSdk 25); on Android 13+ it asks for the notification permission at runtime.
 
+### App Killer (`appkiller/`)
+A floating, draggable overlay that shows the app currently in the foreground (label + package, updated about once a second) and kills it as root. "Kill" force-stops it once; "Spam Kill x100" force-stops it 100 times in a row so it stays dead even if it tries to restart itself. Needs root (su) and the draw-over-other-apps permission. It never kills its own package; everything else — including system apps — is fair game. Android 7.1.2 supported (minSdk 25).
+
 ## Install
 
 Grab the APKs from the [latest pre-release](https://github.com/vibecodeboredom/randomapks/releases) and sideload with ADB:
@@ -41,6 +44,7 @@ adb install -r AdbBoot-1.0.0.apk
 adb install -r SettingsRepeater-1.0.0.apk
 adb install -r AdminTools-1.0.0.apk
 adb install -r NotificationSpammer-1.0.1.apk
+adb install -r AppKiller-1.0.0.apk
 ```
 
 No ADB? Copy the APK to a USB flash drive, plug it into the device, open it with the file manager, and install.
@@ -55,6 +59,7 @@ cd adbboot && ./gradlew assembleDebug
 cd settingsrepeater && ./gradlew assembleDebug
 cd admintools && ./gradlew assembleDebug
 cd notifspammer && ./gradlew assembleDebug
+cd appkiller && ./gradlew assembleDebug
 ```
 
 ## License
