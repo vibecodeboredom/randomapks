@@ -79,7 +79,11 @@ class SpamService : Service() {
     private var message = ""
     private var useRoot = false
 
-    private val postStep = object : Runnable {
+    // Explicit type (not inferred): the Runnable's run() schedules
+    // itself with postDelayed(postStep, …), and letting the compiler
+    // infer the property type from its own initializer makes type
+    // checking run into a recursive problem.
+    private val postStep: Runnable = object : Runnable {
         override fun run() {
             if (!running) return
             if (postedCount >= targetCount) {
